@@ -4,119 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Administration — Horaires de Prière</title>
-<style>
-  :root{
-    --bg-deep: #0A1F1C;
-    --bg-card: #12302B;
-    --field-bg: #17392F;
-    --divider: #2A4A40;
-    --gold: #C9A227;
-    --gold-bright: #E7C765;
-    --text-primary: #F5F1E6;
-    --text-muted: #8FA89E;
-    --ok: #4caf6b;
-    --err: #d9695f;
-  }
-  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-  html,body{ margin:0; padding:0; background:var(--bg-deep); color:var(--text-primary);
-    font-family:'Roboto','Noto Sans','Segoe UI',Helvetica,Arial,sans-serif; }
-  body{ padding: 20px 16px 100px; max-width: 560px; margin: 0 auto; }
-
-  h1{
-    font-size: clamp(1.4rem, 5vw, 1.7rem);
-    font-weight:700;
-    color: var(--gold-bright);
-    margin: 4px 0 2px;
-    text-align:center;
-  }
-  .subtitle{
-    text-align:center; color:var(--text-muted); font-size:0.92rem; margin-bottom:22px;
-  }
-
-  section{
-    background: var(--bg-card);
-    border:1px solid var(--divider);
-    border-radius: 16px;
-    padding: 16px 16px 18px;
-    margin-bottom: 16px;
-  }
-  section h2{
-    font-size:0.95rem; font-weight:600; letter-spacing:0.03em;
-    color: var(--gold); margin: 0 0 14px;
-  }
-
-  label{
-    display:block; font-size:0.88rem; color:var(--text-muted);
-    margin: 12px 0 6px;
-  }
-  label:first-of-type{ margin-top:0; }
-
-  input[type=text], input[type=time], textarea{
-    width:100%;
-    background: var(--field-bg);
-    border:1px solid var(--divider);
-    border-radius:10px;
-    color: var(--text-primary);
-    font-size:1rem;
-    padding: 12px 12px;
-    font-family:inherit;
-  }
-  input:focus, textarea:focus{
-    outline:none; border-color: var(--gold);
-  }
-  textarea{ resize:vertical; min-height:80px; line-height:1.4; }
-
-  .prayer-grid{
-    display:grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0 12px;
-  }
-  .prayer-grid .field{ min-width:0; }
-
-  .switch-row{
-    display:flex; align-items:center; justify-content:space-between;
-    margin-top:14px;
-  }
-  .switch-row span{ font-size:0.92rem; color: var(--text-primary); }
-
-  .switch{ position:relative; width:48px; height:28px; flex-shrink:0; }
-  .switch input{ opacity:0; width:0; height:0; }
-  .slider{
-    position:absolute; inset:0; background:#3a5850; border-radius:999px;
-    transition: background .25s ease; cursor:pointer;
-  }
-  .slider::before{
-    content:""; position:absolute; width:22px; height:22px; left:3px; top:3px;
-    background:#fff; border-radius:50%; transition: transform .25s ease;
-  }
-  .switch input:checked + .slider{ background: var(--gold); }
-  .switch input:checked + .slider::before{ transform: translateX(20px); }
-
-  .savebar{
-    position:fixed; left:0; right:0; bottom:0;
-    background: linear-gradient(0deg, var(--bg-deep) 70%, transparent);
-    padding: 18px 16px 20px;
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-  }
-  #saveBtn{
-    width:100%; max-width:528px;
-    background: var(--gold);
-    color: #17240C;
-    border:none; border-radius:12px;
-    font-size:1.05rem; font-weight:700;
-    padding: 14px 0;
-    cursor:pointer;
-  }
-  #saveBtn:active{ background: var(--gold-bright); }
-  #saveBtn:disabled{ opacity:.6; }
-
-  #status{
-    font-size:0.88rem; min-height:1.2em;
-    color: var(--text-muted);
-  }
-  #status.ok{ color: var(--ok); }
-  #status.err{ color: var(--err); }
-</style>
+<link rel="stylesheet" href="style-admin.css">
 </head>
 <body>
 
@@ -128,8 +16,15 @@
     <label for="mosqueName">Nom de la mosquée</label>
     <input type="text" id="mosqueName" placeholder="MADINA MASJID">
 
-    <label for="displayDate">Date affichée</label>
-    <input type="text" id="displayDate" placeholder="Lundi 14 Septembre 2026">
+    <label>Date affichée</label>
+    <p class="hint">Calculée automatiquement. Si la date hijri ne correspond pas à la vue de la lune, ajustez ici :</p>
+    <div class="stepper">
+      <button type="button" id="hijriMinus">−</button>
+      <div class="stepper-value"><span id="hijriValue">0</span><span class="stepper-label">jour(s)</span></div>
+      <button type="button" id="hijriPlus">+</button>
+    </div>
+    <p class="hint" id="hijriPreview"></p>
+
   </section>
 
   <section>
@@ -185,9 +80,56 @@
   </footer>
 
 <script>
+  const HIJRI_MONTHS = [
+    "Mouharram", "Safar", "Rabî' al-awwal", "Rabî' ath-thânî",
+    "Joumada al-oula", "Joumada al-âkhira", "Rajab", "Cha'bân",
+    "Ramadan", "Chawwal", "Dhou al-Qi'da", "Dhou al-Hijja"
+  ];
+
+  function gregorianToHijri(gy, gm, gd, offset){
+    let jd = Math.floor((1461 * (gy + 4800 + Math.floor((gm - 14) / 12))) / 4) +
+             Math.floor((367 * (gm - 2 - 12 * Math.floor((gm - 14) / 12))) / 12) -
+             Math.floor((3 * Math.floor((gy + 4900 + Math.floor((gm - 14) / 12)) / 100)) / 4) +
+             gd - 32075;
+    jd += (offset || 0);
+    let l = jd - 1948440 + 10632;
+    const n = Math.floor((l - 1) / 10631);
+    l = l - 10631 * n + 354;
+    const j = Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719) +
+              Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
+    l = l - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) -
+        Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+    const hm = Math.floor((24 * l) / 709);
+    const hd = l - Math.floor((709 * hm) / 24);
+    const hy = 30 * n + j - 30;
+    return { year: hy, month: hm, day: hd };
+  }
+
+  let hijriOffset = 0;
+  const hijriValueEl = document.getElementById('hijriValue');
+  const hijriPreviewEl = document.getElementById('hijriPreview');
+
+  function refreshHijriPreview(){
+    if (!hijriValueEl || !hijriPreviewEl) return; // évite un plantage si l'élément est absent
+    hijriValueEl.textContent = (hijriOffset > 0 ? '+' : '') + hijriOffset;
+    const now = new Date();
+    const h = gregorianToHijri(now.getFullYear(), now.getMonth() + 1, now.getDate(), hijriOffset);
+    hijriPreviewEl.textContent = `Aujourd'hui : ${h.day} ${HIJRI_MONTHS[h.month - 1]} ${h.year}`;
+  }
+
+  const hijriMinusBtn = document.getElementById('hijriMinus');
+  const hijriPlusBtn = document.getElementById('hijriPlus');
+  if (hijriMinusBtn) hijriMinusBtn.addEventListener('click', () => {
+    hijriOffset = Math.max(-3, hijriOffset - 1);
+    refreshHijriPreview();
+  });
+  if (hijriPlusBtn) hijriPlusBtn.addEventListener('click', () => {
+    hijriOffset = Math.min(3, hijriOffset + 1);
+    refreshHijriPreview();
+  });
+
   const els = {
     mosqueName: document.getElementById('mosqueName'),
-    displayDate: document.getElementById('displayDate'),
     fajr: document.getElementById('fajr'),
     zuhr: document.getElementById('zuhr'),
     asr: document.getElementById('asr'),
@@ -201,40 +143,44 @@
   const statusEl = document.getElementById('status');
 
   function fill(data){
-    els.mosqueName.value = data.mosqueName || '';
-    els.displayDate.value = data.displayDate || '';
+    if (els.mosqueName) els.mosqueName.value = data.mosqueName || '';
+    hijriOffset = Number.isFinite(data.hijriOffset) ? data.hijriOffset : 0;
+    refreshHijriPreview();
     const p = data.prayers || {};
     ['fajr','zuhr','asr','maghrib','isha','jumuah'].forEach((k) => {
-      els[k].value = p[k] || '';
+      if (els[k]) els[k].value = p[k] || '';
     });
-    els.footerMessage.value = data.footerMessage || '';
-    els.showFooter.checked = !!data.showFooter;
+    if (els.footerMessage) els.footerMessage.value = data.footerMessage || '';
+    if (els.showFooter) els.showFooter.checked = !!data.showFooter;
   }
 
   function setStatus(text, kind){
+    if (!statusEl) return;
     statusEl.textContent = text;
     statusEl.className = kind || '';
   }
+
+  refreshHijriPreview();
 
   fetch('/api/data')
     .then((r) => r.json())
     .then(fill)
     .catch(() => setStatus("Impossible de charger les données. Vérifiez que le téléphone est bien sur le même Wi-Fi.", 'err'));
 
-  saveBtn.addEventListener('click', () => {
+  if (saveBtn) saveBtn.addEventListener('click', () => {
     const payload = {
-      mosqueName: els.mosqueName.value.trim(),
-      displayDate: els.displayDate.value.trim(),
+      mosqueName: els.mosqueName ? els.mosqueName.value.trim() : '',
+      hijriOffset: hijriOffset,
       prayers: {
-        fajr: els.fajr.value,
-        zuhr: els.zuhr.value,
-        asr: els.asr.value,
-        maghrib: els.maghrib.value,
-        isha: els.isha.value,
-        jumuah: els.jumuah.value,
+        fajr: els.fajr ? els.fajr.value : '',
+        zuhr: els.zuhr ? els.zuhr.value : '',
+        asr: els.asr ? els.asr.value : '',
+        maghrib: els.maghrib ? els.maghrib.value : '',
+        isha: els.isha ? els.isha.value : '',
+        jumuah: els.jumuah ? els.jumuah.value : '',
       },
-      footerMessage: els.footerMessage.value,
-      showFooter: els.showFooter.checked,
+      footerMessage: els.footerMessage ? els.footerMessage.value : '',
+      showFooter: els.showFooter ? els.showFooter.checked : false,
     };
 
     saveBtn.disabled = true;
@@ -256,5 +202,6 @@
       });
   });
 </script>
+
 </body>
 </html>

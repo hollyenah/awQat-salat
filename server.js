@@ -18,7 +18,7 @@ const DATA_FILE = path.join(__dirname, 'data.json');
 
 const DEFAULT_DATA = {
   mosqueName: 'MASJID',
-  displayDate: '',
+  hijriOffset: 0, // décalage Hijri
   prayers: {
     fajr: '05:30',
     zuhr: '13:15',

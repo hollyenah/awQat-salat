@@ -10,8 +10,8 @@
   --text-muted: #ff0000;
   --fs-mosque-name: clamp(5rem, 3.4vw, 3.2rem);
   --fs-arial-black: 'Arial Black', sans-serif;
-  --fs-clock: clamp(4rem, 2.8vw, 2.5rem);
-  --fs-date: clamp(2rem, 1.5vw, 1.3rem);
+  --fs-clock: clamp(6rem, 2.8vw, 2.5rem);
+  --fs-date: clamp(3.5rem, 1.5vw, 1.3rem);
   --fs-prayer-label: clamp(3rem, 1.15vw, 1.2rem);
   --fs-prayer-time: clamp(2.8rem, 7vw, 6.4rem);
   --fs-footer: clamp(1rem, 1.6vw, 1.5rem);
@@ -53,7 +53,9 @@ h1{ /* mosque name */
 .meta{
   margin-top: 10px;
   display:flex;
-  align-items:baseline;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
   justify-content:center;
   gap: 14px;
   color: var(--text-muted);
@@ -67,7 +69,12 @@ h1{ /* mosque name */
   letter-spacing: 0.02em;
 }
 .sep{ color: var(--gold); opacity:.7; font-size: var(--fs-date); }
-/*#displayDate{ font-size: var(--fs-date); }*/
+#displayDate{ 
+  font-size: var(--fs-date); 
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
 .divider{
   width:min(70vw, 640px);
   display:flex; align-items:center;
