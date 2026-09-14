@@ -84,3 +84,24 @@ Le serveur doit rester lancé en permanence. Si l'appareil redémarre, il suffit
   modifiables sans toucher au reste du code.
 - Un petit point en haut à droite de l'écran TV indique la connexion au serveur
   (vert = connecté, rouge = coupé — l'écran affiche alors les dernières données connues).
+
+
+Pour un usage permanent sur Android TV (avec redémarrage automatique après coupure de courant), la combinaison la plus fiable est **Termux + Termux:Boot** — ça évite complètement de retaper la commande.
+
+**Pourquoi ça, plutôt qu'une appli "gestionnaire de serveur" générique :** Termux:Boot est fait exactement pour ce cas — un petit script qui se lance tout seul dès que l'appareil redémarre, sans intervention. C'est l'équivalent Android d'un `.bat` qui se lancerait au démarrage de Windows.
+
+**Mise en place (une seule fois) :**
+
+1. Installez **Termux** et **Termux:Boot** — depuis [F-Droid](https://f-droid.org), pas le Play Store (la version Play Store de Termux est abandonnée et bugue).
+2. Dans Termux : `pkg install nodejs` puis transférez le dossier `masjid-app` dessus (via un câble, ou `termux-setup-storage` + copie depuis le stockage partagé).
+3. Ouvrez Termux:Boot une fois (juste pour autoriser le démarrage automatique), puis créez le fichier `~/.termux/boot/start-masjid.sh` avec :
+   ```sh
+   #!/data/data/com.termux/files/usr/bin/sh
+   termux-wake-lock
+   cd ~/masjid-app
+   node server.js
+   ```
+4. Rendez-le exécutable : `chmod +x ~/.termux/boot/start-masjid.sh`
+5. Redémarrez la TV pour tester — le serveur doit démarrer seul, sans rien taper.
+
+**Pour l'écran** : installez **Fully Kiosk Browser** (gratuite, faite pour Android TV) et configurez-la pour ouvrir `http://localhost:3000/` en plein écran au démarrage. Comme ça, après une coupure de courant, tout revient automatiquement : serveur + affichage, sans manipulation.

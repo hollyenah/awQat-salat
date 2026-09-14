@@ -3,178 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Horaires de Prière</title>
-<style>
-  :root{
-    --bg-deep: #0A1F1C;
-    --bg-panel: #12302B;
-    --bg-panel-active: #1B3F36;
-    --divider: #24443C;
-    --gold: #C9A227;
-    --gold-bright: #E7C765;
-    --text-primary: #F5F1E6;
-    --text-muted: #8FA89E;
-
-    --fs-mosque-name: clamp(3rem, 3.4vw, 3.2rem);
-    --fs-arial-black: 'Arial Black', sans-serif;
-    --fs-clock: clamp(4rem, 2.8vw, 2.5rem);
-    --fs-date: clamp(2rem, 1.5vw, 1.3rem);
-    --fs-prayer-label: clamp(0.85rem, 1.15vw, 1.2rem);
-    --fs-prayer-time: clamp(2.8rem, 7vw, 6.4rem);
-    --fs-footer: clamp(1rem, 1.6vw, 1.5rem);
-  }
-
-  *{ box-sizing: border-box; }
-
-  html, body{
-    margin:0; padding:0; height:100%;
-    background: radial-gradient(ellipse at 50% 30%, #123A32 0%, var(--bg-deep) 60%);
-    color: var(--text-primary);
-    font-family: 'Roboto', 'Noto Sans', 'Segoe UI', Helvetica, Arial, sans-serif;
-    overflow: hidden;
-    cursor: none;
-    -webkit-user-select: none; user-select: none;
-  }
-
-  body{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    min-height:100vh;
-    padding: clamp(16px, 3vh, 48px) clamp(16px, 4vw, 64px);
-  }
-
-  .status-dot{
-    position:absolute; top:16px; right:16px;
-    width:9px; height:9px; border-radius:50%;
-    background:#5a6b66; opacity:.55;
-    transition: background .5s ease;
-  }
-
-  .header{ text-align:center; }
-
-  h1{
-    margin:0;
-    font-size: var(--fs-mosque-name);
-    font-family: var(--fs-arial-black);
-    font-weight:700;
-    letter-spacing: 0.03em;
-    color: var(--gold-bright);
-  }
-
-  .meta{
-    margin-top: 10px;
-    display:flex;
-    align-items:baseline;
-    justify-content:center;
-    gap: 14px;
-    color: var(--text-muted);
-  }
-
-  #clock{
-    font-size: var(--fs-clock);
-    font-family: var(--fs-arial-black);
-    font-weight:600;
-    color: var(--text-primary);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
-  }
-
-  .sep{ color: var(--gold); opacity:.7; font-size: var(--fs-date); }
-
-  /*#displayDate{ font-size: var(--fs-date); }*/
-
-  .divider{
-    width:min(70vw, 640px);
-    display:flex; align-items:center;
-    margin: clamp(18px,3vh,36px) 0;
-  }
-  .divider .line{
-    flex:1; height:1px;
-    background: linear-gradient(90deg, transparent, var(--divider) 20%, var(--divider) 80%, transparent);
-  }
-  .divider .diamond{
-    width:9px; height:9px; margin:0 16px;
-    background: var(--gold);
-    transform: rotate(45deg);
-    border-radius:2px;
-    flex-shrink:0;
-  }
-
-  .grid{
-    width:min(94vw, 1400px);
-    flex: 0 0 auto;
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: clamp(12px, 2vw, 26px);
-  }
-
-  .card{
-    background: var(--bg-panel);
-    border: 1px solid var(--divider);
-    border-radius: 18px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap: clamp(6px, 1vh, 14px);
-    padding: clamp(14px, 2.6vw, 30px) 10px;
-    min-height: clamp(130px, 17vw, 220px);
-    transition: background .5s ease, border-color .5s ease, box-shadow .5s ease;
-  }
-
-  .card .label{
-    font-size: var(--fs-prayer-label);
-    font-weight:600;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-  }
-
-  .card .time{
-    font-size: var(--fs-prayer-time);
-    font-weight:800;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    line-height:1;
-    color: var(--text-primary);
-  }
-
-  .card.next{
-    background: var(--bg-panel-active);
-    border-color: var(--gold);
-    box-shadow: 0 0 0 1px var(--gold), 0 0 30px -6px var(--gold-bright);
-    animation: pulseGlow 2.6s ease-in-out infinite;
-  }
-  .card.next .label{ color: var(--gold-bright); }
-  .card.next .time{ color: var(--gold-bright); }
-
-  @keyframes pulseGlow{
-    0%, 100% { box-shadow: 0 0 0 1px var(--gold), 0 0 24px -8px var(--gold-bright); }
-    50%      { box-shadow: 0 0 0 1px var(--gold), 0 0 40px -6px var(--gold-bright); }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .card.next{ animation:none; }
-  }
-
-  .footer{
-    margin-top: clamp(18px, 3vh, 36px);
-    width: min(90vw, 1100px);
-    text-align:center;
-    border-top: 1px solid var(--divider);
-    padding-top: clamp(14px, 2.4vh, 24px);
-  }
-  .footer p{
-    margin:0;
-    font-size: var(--fs-footer);
-    font-style: italic;
-    font-weight: 400;
-    color: var(--text-primary);
-    line-height:1.5;
-  }
-  .footer[hidden]{ display:none; }
-</style>
+<title>Horaires de Prière - ABOUBAKR SIDDIQ - ANTANANARIVO</title>
+<link rel="stylesheet" href="style-tv.css">
 </head>
 <body>
 
@@ -194,17 +24,25 @@
   </div>
 
   <main class="grid" id="grid">
-    <div class="card" data-key="fajr"><span class="label">Fajr</span><span class="time">--:--</span></div>
-    <div class="card" data-key="zuhr"><span class="label">Zuhr</span><span class="time">--:--</span></div>
-    <div class="card" data-key="asr"><span class="label">Asr</span><span class="time">--:--</span></div>
-    <div class="card" data-key="maghrib"><span class="label">Maghrib</span><span class="time">--:--</span></div>
-    <div class="card" data-key="isha"><span class="label">Isha</span><span class="time">--:--</span></div>
-    <div class="card" data-key="jumuah"><span class="label">Jum'ah</span><span class="time">--:--</span></div>
+    <div class="card" data-key="fajr"><span class="label">FAJR</span><span class="time">--:--</span></div>
+    <div class="card" data-key="zuhr"><span class="label">ZOUHR</span><span class="time">--:--</span></div>
+    <div class="card" data-key="asr"><span class="label">ASSR</span><span class="time">--:--</span></div>
+    <div class="card" data-key="maghrib"><span class="label">MAGHRIB</span><span class="time">--:--</span></div>
+    <div class="card" data-key="isha"><span class="label">ISHA</span><span class="time">--:--</span></div>
+    <div class="card" data-key="jumuah"><span class="label">JOUM'AH</span><span class="time">--:--</span></div>
   </main>
 
   <footer class="footer" id="footerWrap" hidden>
     <p id="footerMessage"></p>
   </footer>
+  
+  <p style="font-size: 0.875em;
+      margin-top: 10px;
+      margin-left: 90%;
+      color:#8FA89E;
+      font-family: 'arial narrow', sans-serif;">
+      &copy; 2026 HJ. Qassim.
+  </p>
 
 <script>
   const mosqueNameEl = document.getElementById('mosqueName');
