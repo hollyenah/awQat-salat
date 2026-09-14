@@ -17,7 +17,7 @@ const PUBLIC_DIR = path.join(__dirname, 'public');
 const DATA_FILE = path.join(__dirname, 'data.json');
 
 const DEFAULT_DATA = {
-  mosqueName: 'MADINA MASJID',
+  mosqueName: 'MASJID',
   displayDate: '',
   prayers: {
     fajr: '05:30',

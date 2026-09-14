@@ -86,10 +86,6 @@ Le serveur doit rester lancé en permanence. Si l'appareil redémarre, il suffit
   (vert = connecté, rouge = coupé — l'écran affiche alors les dernières données connues).
 
 
-Pour un usage permanent sur Android TV (avec redémarrage automatique après coupure de courant), la combinaison la plus fiable est **Termux + Termux:Boot** — ça évite complètement de retaper la commande.
-
-**Pourquoi ça, plutôt qu'une appli "gestionnaire de serveur" générique :** Termux:Boot est fait exactement pour ce cas — un petit script qui se lance tout seul dès que l'appareil redémarre, sans intervention. C'est l'équivalent Android d'un `.bat` qui se lancerait au démarrage de Windows.
-
 **Mise en place (une seule fois) :**
 
 1. Installez **Termux** et **Termux:Boot** — depuis [F-Droid](https://f-droid.org), pas le Play Store (la version Play Store de Termux est abandonnée et bugue).
