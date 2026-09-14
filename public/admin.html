@@ -39,6 +39,14 @@
   </label>
 </div>
 
+<div class="switch-row">
+  <span>Afficher le logo</span>
+  <label class="switch">
+    <input type="checkbox" id="showLogo">
+    <span class="slider"></span>
+  </label>
+</div>
+
 
   </section>
 
@@ -155,6 +163,7 @@
     showFooter: document.getElementById('showFooter'),
     showGregorian: document.getElementById('showGregorian'),
     showHijri: document.getElementById('showHijri'),
+    showLogo: document.getElementById('showLogo'),
   };
   const saveBtn = document.getElementById('saveBtn');
   const statusEl = document.getElementById('status');
@@ -171,6 +180,7 @@
     });
     if (els.footerMessage) els.footerMessage.value = data.footerMessage || '';
     if (els.showFooter) els.showFooter.checked = !!data.showFooter;
+    if (els.showLogo) els.showLogo.checked = !!data.showLogo;
   }
 
   function setStatus(text, kind){
@@ -189,6 +199,7 @@
   if (saveBtn) saveBtn.addEventListener('click', () => {
     const payload = {
       mosqueName: els.mosqueName ? els.mosqueName.value.trim() : '',
+      showLogo: els.showLogo ? els.showLogo.checked : false,
       hijriOffset: hijriOffset,
       showGregorian: els.showGregorian ? els.showGregorian.checked : true,
       showHijri: els.showHijri ? els.showHijri.checked : true,

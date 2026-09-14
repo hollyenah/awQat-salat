@@ -9,13 +9,13 @@
 <body>
 
   <div class="status-dot" id="statusDot" aria-hidden="true"></div>
+  <img id="logo" class="logo" src="/logo.png" alt="" onerror="this.style.display='none'">
 
   <header class="header">
     <h1 id="mosqueName">MASJID</h1>
     <div class="meta">
       <span id="displayDate" style="color:#feebb2;"></span>
       <span id="clock">--:--:--</span>
-      <!--span class="sep">•</span--    Pour separer point -->
     </div>
   </header>
 
@@ -96,7 +96,6 @@ function updateDateDisplay(){
   }));
   const h = gregorianToHijri(now.getFullYear(), now.getMonth() + 1, now.getDate(), hijriOffset);
   const hijri = `${h.day} ${HIJRI_MONTHS[h.month - 1]} ${h.year}`;
-  /*displayDateEl.innerHTML = `${gregorian} <span class="sep" id="dateSep">•</span> ${hijri}`;*/
   const parts = [];
   if (showGregorian) parts.push(gregorian);
   if (showHijri) parts.push(hijri);
@@ -144,11 +143,11 @@ function updateDateDisplay(){
   function render(data){
     if (!data) return;
     mosqueNameEl.textContent = data.mosqueName || '';
+    document.getElementById('logo').style.display = data.showLogo ? '' : 'none';
     hijriOffset = Number.isFinite(data.hijriOffset) ? data.hijriOffset : 0;
     showGregorian = data.showGregorian !== false;
     showHijri = data.showHijri !== false;
     updateDateDisplay();
-
     currentPrayers = data.prayers || {};
     Object.keys(cardEls).forEach((key) => {
       cardEls[key].querySelector('.time').textContent = currentPrayers[key] || '--:--';

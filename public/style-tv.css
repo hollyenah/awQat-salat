@@ -14,7 +14,7 @@
   --fs-date: clamp(3.5rem, 1.5vw, 1.3rem);
   --fs-prayer-label: clamp(3rem, 1.15vw, 1.2rem);
   --fs-prayer-time: clamp(2.8rem, 7vw, 6.4rem);
-  --fs-footer: clamp(1rem, 1.6vw, 1.5rem);
+  --fs-footer: clamp(2rem, 1.6vw, 1.5rem);
 }
 *{ box-sizing: border-box; }
 html, body{
@@ -26,6 +26,7 @@ html, body{
   overflow: hidden;
   cursor: none;
   -webkit-user-select: none; user-select: none;
+  overflow-x: hidden;
 }
 body{
   display:flex;
@@ -41,6 +42,15 @@ body{
   background:#5a6b66; opacity:.55;
   transition: background .5s ease;
 }
+.logo{
+  position:absolute;
+  top: clamp(16px, 3vh, 32px);
+  right: clamp(16px, 3vw, 48px);
+  max-height: clamp(150px, 8vh, 100px);
+  max-width: 22vw;
+  object-fit: contain;
+}
+
 .header{ text-align:center; }
 h1{ /* mosque name */
   margin:0;
@@ -74,6 +84,7 @@ h1{ /* mosque name */
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
+  text-transform: uppercase;
 
 }
 .divider{
@@ -100,6 +111,30 @@ h1{ /* mosque name */
   grid-template-rows: repeat(2, 1fr);
   gap: clamp(12px, 2vw, 26px);
 }
+@media (max-width: 700px){
+  .grid{
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .card{
+    padding: 10px 6px;
+    min-height: 100px;
+  }
+  .card .time{
+    font-size: clamp(1.7rem, 9vw, 2.6rem);
+  }
+  .card .label{
+    font-size: clamp(0.7rem, 3vw, 0.9rem);
+  }
+  h1{
+    font-size: clamp(1.3rem, 6vw, 2rem);
+  }
+  #clock{
+    font-size: clamp(1.1rem, 5vw, 1.6rem);
+  }
+}
+
 .card{
   background: var(--bg-panel);
   border: 1px solid var(--divider);
@@ -111,6 +146,7 @@ h1{ /* mosque name */
   gap: clamp(6px, 1vh, 14px);
   padding: clamp(14px, 2.6vw, 30px) 10px;
   min-height: clamp(130px, 17vw, 220px);
+  min-width: 0;
   transition: background .5s ease, border-color .5s ease, box-shadow .5s ease;
 }
 .card .label{
@@ -155,6 +191,7 @@ h1{ /* mosque name */
   margin:0;
   font-size: var(--fs-footer);
   font-style: italic;
+  font-family: Calibri, sans-serif;
   font-weight: 400;
   color: var(--text-primary);
   line-height:1.5;

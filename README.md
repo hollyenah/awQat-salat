@@ -18,7 +18,7 @@ fonctionne que sur le réseau Wi-Fi local.
 ## Contenu du dossier
 
 ```
-masjid-app/
+awQat-salat/
 ├── server.js          → le serveur local (aucune dépendance à installer)
 ├── data.json           → les données actuelles (créé/mis à jour automatiquement)
 ├── package.json
@@ -44,7 +44,7 @@ d'afficher une page web via son navigateur, comme n'importe quel autre appareil 
 ### Démarrage du serveur
 
 ```bash
-cd masjid-app
+cd awQat-salat
 node server.js
 ```
 
@@ -93,15 +93,15 @@ Le serveur doit rester lancé en permanence. Si l'appareil redémarre, il suffit
 **Mise en place (une seule fois) :**
 
 1. Installez **Termux** et **Termux:Boot** — depuis [F-Droid](https://f-droid.org), pas le Play Store (la version Play Store de Termux est abandonnée et bugue).
-2. Dans Termux : `pkg install nodejs` puis transférez le dossier `masjid-app` dessus (via un câble, ou `termux-setup-storage` + copie depuis le stockage partagé).
-3. Ouvrez Termux:Boot une fois (juste pour autoriser le démarrage automatique), puis créez le fichier `~/.termux/boot/start-masjid.sh` avec :
+2. Dans Termux : `pkg install nodejs` puis transférez le dossier `awQat-salat` dessus (via un câble, ou `termux-setup-storage` + copie depuis le stockage partagé).
+3. Ouvrez Termux:Boot une fois (juste pour autoriser le démarrage automatique), puis créez le fichier `~/.termux/boot/start-awQat-salat.sh` avec :
    ```sh
    #!/data/data/com.termux/files/usr/bin/sh
    termux-wake-lock
-   cd ~/masjid-app
+   cd ~/awQat-salat
    node server.js
    ```
-4. Rendez-le exécutable : `chmod +x ~/.termux/boot/start-masjid.sh`
+4. Rendez-le exécutable : `chmod +x ~/.termux/boot/start-awQat-salat.sh`
 5. Redémarrez la TV pour tester — le serveur doit démarrer seul, sans rien taper.
 
 **Pour l'écran** : installez **Fully Kiosk Browser** (gratuite, faite pour Android TV) et configurez-la pour ouvrir `http://localhost:3000/` en plein écran au démarrage. Comme ça, après une coupure de courant, tout revient automatiquement : serveur + affichage, sans manipulation.

@@ -21,6 +21,7 @@ const DEFAULT_DATA = {
     hijriOffset: 0,
     showGregorian: true,
     showHijri: true,
+    showLogo: false,
 
   prayers: {
     fajr: '05:30',
