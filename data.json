@@ -1,0 +1,14 @@
+{
+  "mosqueName": "MASJID ABOU BAKR SIDDIQ",
+  "displayDate": "",
+  "prayers": {
+    "fajr": "05:00",
+    "zuhr": "12:30",
+    "asr": "15:45",
+    "maghrib": "19:50",
+    "isha": "20:45",
+    "jumuah": "12:20"
+  },
+  "footerMessage": "Le Prophète (paix sur lui) a dit : « La prière est la lumière. »",
+  "showFooter": true
+}
