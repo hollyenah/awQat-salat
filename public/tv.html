@@ -58,7 +58,9 @@
   const DAILY_ORDER = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha']; // Jum'ah n'entre pas dans le calcul "prochaine prière"
   let currentPrayers = {};
 
-  let hijriOffset = 0; // réglé depuis l'administration, pour recaler sur la vue de la lune
+  let hijriOffset = 0;
+  let showGregorian = true;
+  let showHijri = true;
 
 const HIJRI_MONTHS = [
   "Mouharram", "Safar", "Rabioul-Awwal", "Rabioul-Akhir",
@@ -94,7 +96,14 @@ function updateDateDisplay(){
   }));
   const h = gregorianToHijri(now.getFullYear(), now.getMonth() + 1, now.getDate(), hijriOffset);
   const hijri = `${h.day} ${HIJRI_MONTHS[h.month - 1]} ${h.year}`;
-  displayDateEl.innerHTML = `${gregorian} <span class="sep">•</span> ${hijri}`;
+  /*displayDateEl.innerHTML = `${gregorian} <span class="sep" id="dateSep">•</span> ${hijri}`;*/
+  const parts = [];
+  if (showGregorian) parts.push(gregorian);
+  if (showHijri) parts.push(hijri);
+  displayDateEl.innerHTML = parts.map((p) => `<span>${p}</span>`).join('<span class="date-sep"> • </span>');
+  displayDateEl.style.display = parts.length ? '' : 'none';
+  const sepEl = document.getElementById('dateSep');
+  if (sepEl) sepEl.style.display = parts.length ? '' : 'none';
 }
 
   function setStatus(ok){
@@ -136,6 +145,8 @@ function updateDateDisplay(){
     if (!data) return;
     mosqueNameEl.textContent = data.mosqueName || '';
     hijriOffset = Number.isFinite(data.hijriOffset) ? data.hijriOffset : 0;
+    showGregorian = data.showGregorian !== false;
+    showHijri = data.showHijri !== false;
     updateDateDisplay();
 
     currentPrayers = data.prayers || {};

@@ -68,12 +68,13 @@ h1{ /* mosque name */
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
-.sep{ color: var(--gold); opacity:.7; font-size: var(--fs-date); }
+.date-sep{ color: var(--gold); opacity:.7; font-size: var(--fs-date); }
 #displayDate{ 
   font-size: var(--fs-date); 
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
+
 }
 .divider{
   width:min(70vw, 640px);

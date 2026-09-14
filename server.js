@@ -18,7 +18,10 @@ const DATA_FILE = path.join(__dirname, 'data.json');
 
 const DEFAULT_DATA = {
   mosqueName: 'MASJID',
-  hijriOffset: 0, // décalage Hijri
+    hijriOffset: 0,
+    showGregorian: true,
+    showHijri: true,
+
   prayers: {
     fajr: '05:30',
     zuhr: '13:15',
@@ -27,8 +30,8 @@ const DEFAULT_DATA = {
     isha: '20:45',
     jumuah: '13:30'
   },
-  footerMessage: '',
-  showFooter: false
+  footerMessage: 'MADE by HJ. QASSIM',
+  showFooter: true
 };
 
 // ---- Persistance des données -------------------------------------------

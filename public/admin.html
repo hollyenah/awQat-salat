@@ -13,8 +13,8 @@
 
   <section>
     <h2>Mosquée</h2>
-    <label for="mosqueName">Nom de la mosquée</label>
-    <input type="text" id="mosqueName" placeholder="MADINA MASJID">
+    <label for="mosqueName">Nom de la Masjid</label>
+    <input type="text" id="mosqueName" placeholder="MASJID">
 
     <label>Date affichée</label>
     <p class="hint">Calculée automatiquement. Si la date hijri ne correspond pas à la vue de la lune, ajustez ici :</p>
@@ -24,6 +24,21 @@
       <button type="button" id="hijriPlus">+</button>
     </div>
     <p class="hint" id="hijriPreview"></p>
+    <div class="switch-row">
+  <span>Afficher la date grégorienne</span>
+  <label class="switch">
+    <input type="checkbox" id="showGregorian" checked>
+    <span class="slider"></span>
+  </label>
+</div>
+<div class="switch-row">
+  <span>Afficher la date hijri</span>
+  <label class="switch">
+    <input type="checkbox" id="showHijri" checked>
+    <span class="slider"></span>
+  </label>
+</div>
+
 
   </section>
 
@@ -138,6 +153,8 @@
     jumuah: document.getElementById('jumuah'),
     footerMessage: document.getElementById('footerMessage'),
     showFooter: document.getElementById('showFooter'),
+    showGregorian: document.getElementById('showGregorian'),
+    showHijri: document.getElementById('showHijri'),
   };
   const saveBtn = document.getElementById('saveBtn');
   const statusEl = document.getElementById('status');
@@ -146,6 +163,8 @@
     if (els.mosqueName) els.mosqueName.value = data.mosqueName || '';
     hijriOffset = Number.isFinite(data.hijriOffset) ? data.hijriOffset : 0;
     refreshHijriPreview();
+    if (els.showGregorian) els.showGregorian.checked = data.showGregorian !== false;
+    if (els.showHijri) els.showHijri.checked = data.showHijri !== false;
     const p = data.prayers || {};
     ['fajr','zuhr','asr','maghrib','isha','jumuah'].forEach((k) => {
       if (els[k]) els[k].value = p[k] || '';
@@ -171,6 +190,8 @@
     const payload = {
       mosqueName: els.mosqueName ? els.mosqueName.value.trim() : '',
       hijriOffset: hijriOffset,
+      showGregorian: els.showGregorian ? els.showGregorian.checked : true,
+      showHijri: els.showHijri ? els.showHijri.checked : true,
       prayers: {
         fajr: els.fajr ? els.fajr.value : '',
         zuhr: els.zuhr ? els.zuhr.value : '',
