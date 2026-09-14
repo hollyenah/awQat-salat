@@ -1,3 +1,5 @@
+MADE BY ARCHALIAN - HJ. QASSIM
+
 # Horaires de Prière — Application pour Android TV
 
 Application 100% hors-ligne d'affichage des horaires de prière, avec administration
