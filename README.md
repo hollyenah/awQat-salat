@@ -24,6 +24,8 @@ masjid-app/
 ├── package.json
 └── public/
     ├── tv.html          → écran d'affichage public (à ouvrir sur la TV)
+    ├── style-admin.css → css admin.html
+    ├── style-tv.css → css tv.html
     └── admin.html        → panneau d'administration (à ouvrir sur le téléphone)
 ```
 
