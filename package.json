@@ -1,6 +1,6 @@
 {
   "name": "horaires-priere-masjid",
-  "version": "1.0.2",
+  "version": "1.3",
   "description": "Application d'affichage des horaires de prière pour Android TV, 100% hors-ligne",
   "main": "server.js",
   "scripts": {
