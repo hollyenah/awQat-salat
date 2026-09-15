@@ -284,8 +284,21 @@ function loadImageSafe(src){
 }
 
 async function buildExportCanvas(){
+  // 1) S'assurer que les 3 polices sont prêtes côté admin
+  try {
+    await Promise.all([
+      document.fonts.load("700 80px 'arabicFont'"),
+      document.fonts.load("600 125px 'primaryFont'"),
+      document.fonts.load("900 110px 'arialBlack'"),
+      document.fonts.load("italic 400 24px 'arabicFont'"),
+      document.fonts.load("600 60px 'arabicFont'"),
+      document.fonts.load("400 60px 'primaryFont'"),
+    ]);
+    await document.fonts.ready;
+  } catch(e){ /* polices absentes → fallback */ }
+
   const canvas = document.createElement('canvas');
-  canvas.width = EXPORT_W;
+  canvas.width  = EXPORT_W;
   canvas.height = EXPORT_H;
   const ctx = canvas.getContext('2d');
 
@@ -295,47 +308,76 @@ async function buildExportCanvas(){
     text: '#F5F1E6', muted: '#8FA89E'
   };
 
-  // Fond
-  const grad = ctx.createRadialGradient(EXPORT_W/2, EXPORT_H*0.32, 50, EXPORT_W/2, EXPORT_H*0.32, EXPORT_W*0.7);
-  grad.addColorStop(0, '#123A32');
-  grad.addColorStop(1, COL.bgDeep);
+  // Fond (radial-gradient identique à style-tv.css)
+  const grad = ctx.createRadialGradient(
+    EXPORT_W/2, EXPORT_H*0.30, 0,
+    EXPORT_W/2, EXPORT_H*0.30, EXPORT_W*0.75
+  );
+  grad.addColorStop(0,   '#123A32');
+  grad.addColorStop(0.6, COL.bgDeep);
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, EXPORT_W, EXPORT_H);
 
-  // Nom de la mosquée
-  ctx.textAlign = 'center';
-  ctx.fillStyle = COL.goldBright;
-  ctx.font = "bold 62px 'Roboto', sans-serif";
-  ctx.fillText(els.mosqueName.value || '', EXPORT_W / 2, 110);
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'alphabetic';
 
-  // Heure + date (grégorienne / hijri selon les interrupteurs), au moment de l'export
+  // ============ HEADER ============
+  // h1 : 80px, arabicFont, weight 700, line-height 1.15
+  let y = 70;
+  ctx.font      = "700 80px 'arabicFont', 'primaryFont', 'Roboto', sans-serif";
+  ctx.fillStyle = COL.goldBright;
+  ctx.fillText(els.mosqueName.value || '', EXPORT_W/2, y + 80);
+  y += 92 + 16;                        // line-height + margin-top du .meta
+
+  // clock : 125px, primaryFont, weight 600
   const now = new Date();
-  const clockStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  const gregorian = capitalizeExport(now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }));
-  const h = gregorianToHijri(now.getFullYear(), now.getMonth() + 1, now.getDate(), hijriOffset);
+  const clockStr = now.toLocaleTimeString('fr-FR',
+    { hour: '2-digit', minute: '2-digit'});
+  ctx.font      = "600 125px 'primaryFont', 'Roboto', sans-serif";
+  ctx.fillStyle = COL.text;
+  ctx.fillText(clockStr, EXPORT_W/2, y + 125);
+  y += 125 + 10;                       // gap:10px du .meta
+
+  // displayDate : 60px, primaryFont, weight 400, uppercase
+  const gregorian = capitalizeExport(now.toLocaleDateString('fr-FR',
+    { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' }));
+  const h  = gregorianToHijri(now.getFullYear(), now.getMonth() + 1, now.getDate(), hijriOffset);
   const hijri = `${h.day} ${HIJRI_MONTHS[h.month - 1]} ${h.year}`;
   const dateParts = [];
   if (els.showGregorian && els.showGregorian.checked) dateParts.push(gregorian);
-  if (els.showHijri && els.showHijri.checked) dateParts.push(hijri);
-  const metaLine = [clockStr, dateParts.join(' • ').toUpperCase()].filter(Boolean).join('   •   ');
+  if (els.showHijri     && els.showHijri.checked)     dateParts.push(hijri);
+  const dateLine = dateParts.join('   ✼   ').toUpperCase();
+  ctx.font      = "400 60px 'primaryFont', 'Roboto', sans-serif";
   ctx.fillStyle = COL.text;
-  ctx.font = "500 34px 'Roboto', sans-serif";
-  ctx.fillText(metaLine, EXPORT_W / 2, 168);
+  ctx.fillText(dateLine, EXPORT_W/2, y + 60);
+  y += 78;                             // line-height 1.3
 
-  // Ligne dorée
-  ctx.strokeStyle = COL.gold;
-  ctx.globalAlpha = 0.5;
-  ctx.lineWidth = 1;
+  // ============ DIVIDER (700px, marges 30px haut/bas) ============
+  y += 30;
+  const divW = 700;
+  const divX = (EXPORT_W - divW) / 2;
+  const divY = y + 7;
+  ctx.strokeStyle = COL.divider;
+  ctx.lineWidth   = 1;
   ctx.beginPath();
-  ctx.moveTo(EXPORT_W * 0.28, 205);
-  ctx.lineTo(EXPORT_W * 0.72, 205);
+  ctx.moveTo(divX, divY);
+  ctx.lineTo(divX + divW/2 - 30, divY);
+  ctx.moveTo(divX + divW/2 + 30, divY);
+  ctx.lineTo(divX + divW, divY);
   ctx.stroke();
-  ctx.globalAlpha = 1;
+  ctx.save();
+  ctx.translate(EXPORT_W/2, divY);
+  ctx.rotate(Math.PI / 4);
+  ctx.fillStyle = COL.gold;
+  ctx.fillRect(-7, -7, 14, 14);
+  ctx.restore();
+  y += 14 + 30;
 
-  // Grille des prières
-  const order = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha', 'jumuah'];
-  const labels = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha', jumuah: "Jum'ah" };
-  const dailyOrder = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
+  // ============ GRILLE (1700px, gap 24, cartes 220px) ============
+  const order       = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha', 'jumuah'];
+  const labels      = { fajr:'FAJR', zuhr:'ZOUHR', asr:'ASSR',
+                        maghrib:'MAGHRIB', isha:'ISHA', jumuah:"JOUM'AH" };
+  const dailyOrder  = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 
   const nowMin = now.getHours() * 60 + now.getMinutes();
   function parseHM(str){
@@ -351,50 +393,80 @@ async function buildExportCanvas(){
   });
   if (!nextKey) nextKey = 'fajr';
 
-  const gridX = 110, gridY = 250, gridW = EXPORT_W - gridX * 2, gridH = 620, gap = 28;
-  const cellW = (gridW - gap * 2) / 3, cellH = (gridH - gap) / 2;
+  const gridW  = 1700;
+  const gridX  = (EXPORT_W - gridW) / 2;
+  const gap    = 24;
+  const cellW  = (gridW - gap * 2) / 3;
+  const cellH  = 220;
+  const gridY  = y;
+
+  // letter-spacing (Chrome/Edge ≥ 99, ignoré ailleurs)
+  const supportsSpacing = 'letterSpacing' in ctx;
 
   order.forEach((key, i) => {
     const col = i % 3, row = Math.floor(i / 3);
-    const x = gridX + col * (cellW + gap), y = gridY + row * (cellH + gap);
+    const x   = gridX + col * (cellW + gap);
+    const yy  = gridY + row * (cellH + gap);
     const isNext = key === nextKey;
 
-    roundRect(ctx, x, y, cellW, cellH, 18);
+    // carte
+    roundRect(ctx, x, yy, cellW, cellH, 18);
     ctx.fillStyle = isNext ? COL.bgPanelActive : COL.bgPanel;
     ctx.fill();
-    ctx.lineWidth = isNext ? 2 : 1;
+    ctx.lineWidth   = isNext ? 2 : 1;
     ctx.strokeStyle = isNext ? COL.gold : COL.divider;
     ctx.stroke();
 
+    // label : 60px arabicFont weight 600 + letter-spacing 0.08em (=4.8px)
+    if (supportsSpacing) ctx.letterSpacing = '4.8px';
+    ctx.font      = "600 60px 'arabicFont', 'primaryFont', 'Roboto', sans-serif";
     ctx.fillStyle = isNext ? COL.goldBright : COL.muted;
-    ctx.font = "600 24px 'Roboto', sans-serif";
-    ctx.fillText(labels[key], x + cellW / 2, y + 56);
+    ctx.fillText(labels[key], x + cellW/2, yy + cellH/2 - 20);
 
+    // time : 110px arialBlack weight 800
+    if (supportsSpacing) ctx.letterSpacing = '0px';
+    ctx.font      = "800 110px 'arialBlack', 'Roboto', sans-serif";
     ctx.fillStyle = isNext ? COL.goldBright : COL.text;
-    ctx.font = "800 88px 'Roboto', sans-serif";
-    ctx.fillText(els[key].value || '--:--', x + cellW / 2, y + cellH / 2 + 34);
+    ctx.fillText(els[key].value || '--:--', x + cellW/2, yy + cellH/2 + 90);
   });
+  y = gridY + cellH * 2 + gap;
 
-  // Message du bas
-  if (els.showFooter.checked && els.footerMessage.value.trim()) {
+  // ============ FOOTER (border-top 1200px, texte 24px italique) ============
+  if (els.showFooter && els.showFooter.checked && els.footerMessage.value.trim()) {
     const msg = els.footerMessage.value.trim();
+    y += 30;
+
+    ctx.strokeStyle = COL.divider;
+    ctx.lineWidth   = 1;
+    ctx.beginPath();
+    ctx.moveTo((EXPORT_W - 1200)/2, y);
+    ctx.lineTo((EXPORT_W + 1200)/2, y);
+    ctx.stroke();
+
+    y += 20;
+
     const isArabic = /[\u0600-\u06FF]/.test(msg);
-    ctx.direction = isArabic ? 'rtl' : 'ltr';
-    ctx.font = "italic 32px 'Roboto', sans-serif";
-    ctx.fillStyle = COL.text;
-    const lines = wrapCanvasText(ctx, msg, EXPORT_W * 0.72);
-    let ly = gridY + gridH + 70;
-    lines.slice(0, 3).forEach((line) => { ctx.fillText(line, EXPORT_W / 2, ly); ly += 42; });
+    ctx.direction  = isArabic ? 'rtl' : 'ltr';
+    ctx.font       = "italic 400 24px 'arabicFont', 'primaryFont', 'Roboto', sans-serif";
+    ctx.fillStyle  = COL.text;
+
+    const lines = wrapCanvasText(ctx, msg, 1200);
+    lines.slice(0, 3).forEach((line) => {
+      y += 36;                    // line-height 1.5 × 24
+      ctx.fillText(line, EXPORT_W/2, y);
+    });
     ctx.direction = 'ltr';
   }
 
-  // Logo (si activé et présent sur le serveur)
+  // ============ LOGO (max 280×120, top 30 / right 40) ============
   if (els.showLogo && els.showLogo.checked) {
     const img = await loadImageSafe('/logo.png');
     if (img) {
-      const maxH = 130, ratio = img.naturalWidth / img.naturalHeight;
-      const h2 = maxH, w2 = maxH * ratio;
-      ctx.drawImage(img, EXPORT_W - w2 - 60, 40, w2, h2);
+      const maxH = 120, maxW = 280;
+      const ratio = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight, 1);
+      const w = img.naturalWidth  * ratio;
+      const h = img.naturalHeight * ratio;
+      ctx.drawImage(img, EXPORT_W - w - 40, 30, w, h);
     }
   }
 

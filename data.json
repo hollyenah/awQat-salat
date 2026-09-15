@@ -5,13 +5,13 @@
   "showHijri": true,
   "showLogo": false,
   "prayers": {
-    "fajr": "02:16",
-    "zuhr": "12:45",
+    "fajr": "05:00",
+    "zuhr": "12:30",
     "asr": "15:45",
     "maghrib": "18:50",
     "isha": "19:10",
     "jumuah": "12:20"
   },
-  "footerMessage": "أوقات الصلاة المفروضة ة ",
+  "footerMessage": "أوقات الصلاة المفروضة ",
   "showFooter": true
 }
