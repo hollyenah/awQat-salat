@@ -119,3 +119,16 @@
   }
   #status.ok{ color: var(--ok); }
   #status.err{ color: var(--err); }
+
+  #exportBtn{
+  width:100%; max-width:528px;
+  background: transparent;
+  color: var(--gold-bright);
+  border:1px solid var(--gold);
+  border-radius:12px;
+  font-size:0.95rem; font-weight:600;
+  padding: 12px 0;
+  cursor:pointer;
+}
+#exportBtn:active{ background: rgba(201,162,39,0.15); }
+#exportBtn:disabled{ opacity:.6; }
