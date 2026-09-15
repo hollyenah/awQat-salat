@@ -1,3 +1,14 @@
+@font-face {
+  font-family: 'primaryFont';
+  src: url('font/Poppins-Black.ttf') format('truetype');
+  font-weight: 900;
+}
+@font-face {
+  font-family: 'arabicFont';
+  src: url('font/AligarhArabicFREEPERSONALUSE-Bold.otf') format('opentype');
+  font-weight: 400;
+}
+
 :root{
   --bg-deep: #0A1F1C;
   --bg-panel: #12302B;
@@ -6,10 +17,11 @@
   --gold: #C9A227;
   --gold-bright: #E7C765;
   --text-primary: #F5F1E6;
-  /* --text-muted: #8FA89E; */
-  --text-muted: #ff0000;
+  --text-muted: #8FA89E;
+  /*--text-muted: #ff0000;*/
   --fs-mosque-name: clamp(5rem, 3.4vw, 3.2rem);
-  --fs-arial-black: 'Arial Black', sans-serif;
+  --fs-primary-font: 'primaryFont';
+  --fs-arabic-font: 'arabicFont';
   --fs-clock: clamp(6rem, 2.8vw, 2.5rem);
   --fs-date: clamp(3.5rem, 1.5vw, 1.3rem);
   --fs-prayer-label: clamp(3rem, 1.15vw, 1.2rem);
@@ -22,7 +34,7 @@ html, body{
   background: radial-gradient(ellipse at 50% 30%, #123A32 0%, var(--bg-deep) 60%);
   color: var(--text-primary);
   /*font-family: 'Roboto', 'Noto Sans', 'Segoe UI', Helvetica, Arial, sans-serif;*/
-  font-family: var(--fs-arial-black);
+  font-family: var(--fs-primary-font);
   overflow: hidden;
   cursor: none;
   -webkit-user-select: none; user-select: none;
@@ -55,7 +67,7 @@ body{
 h1{ /* mosque name */
   margin:0;
   font-size: var(--fs-mosque-name);
-  font-family: var(--fs-arial-black);
+  font-family: var(--fs-arabic-font);
   font-weight:700;
   letter-spacing: 0.03em;
   color: var(--gold-bright);
@@ -72,7 +84,7 @@ h1{ /* mosque name */
 }
 #clock{
   font-size: var(--fs-clock);
-  font-family: var(--fs-arial-black);
+  font-family: var(--fs-primary-font);
   font-weight:600;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
@@ -151,14 +163,14 @@ h1{ /* mosque name */
 }
 .card .label{
   font-size: var(--fs-prayer-label);
-  font-family: var(--fs-arial-black);
+  font-family: var(--fs-arabic-font);
   font-weight:600;
   letter-spacing: 0.08em;
   color: var(--text-muted);
 }
 .card .time{
   font-size: var(--fs-prayer-time);
-  font-family: var(--fs-arial-black);
+  font-family: var(--fs-primary-font);
   font-weight:800;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
@@ -191,7 +203,7 @@ h1{ /* mosque name */
   margin:0;
   font-size: var(--fs-footer);
   font-style: italic;
-  font-family: Calibri, sans-serif;
+  font-family: var(--fs-arabic-font);
   font-weight: 400;
   color: var(--text-primary);
   line-height:1.5;
