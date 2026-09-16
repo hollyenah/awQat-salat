@@ -11,12 +11,16 @@
   <link rel="apple-touch-icon" sizes="512x512" href="img/favicon.png">
 
   <!-- Pour Android / Chrome -->
-  <link rel="icon" type="image/png" sizes="512x512" href=".img/favicon.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="img/favicon.png">
 
 </head>
 <body>
+  
+  <p style="font-size: 0.875em; margin: 0;text-align: center; color:#8FA89E;">
+      &copy; 2026 Qassim. · <span id="appVersion">v…</span>
+    </p><h1>Administration</h1>
 
-  <h1>Administration</h1>
+
   <p class="subtitle">Les modifications s'appliquent sur l'écran dès l'enregistrement.</p>
 
   <section>
@@ -33,29 +37,27 @@
     </div>
     <p class="hint" id="hijriPreview"></p>
     <div class="switch-row">
-  <span>Afficher la date grégorienne</span>
-  <label class="switch">
-    <input type="checkbox" id="showGregorian" checked>
-    <span class="slider"></span>
-  </label>
-</div>
-<div class="switch-row">
-  <span>Afficher la date hijri</span>
-  <label class="switch">
-    <input type="checkbox" id="showHijri" checked>
-    <span class="slider"></span>
-  </label>
-</div>
+      <span>Afficher la date grégorienne</span>
+      <label class="switch">
+        <input type="checkbox" id="showGregorian" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="switch-row">
+      <span>Afficher la date hijri</span>
+      <label class="switch">
+        <input type="checkbox" id="showHijri" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
 
-<div class="switch-row">
-  <span>Afficher le logo</span>
-  <label class="switch">
-    <input type="checkbox" id="showLogo">
-    <span class="slider"></span>
-  </label>
-</div>
-
-
+    <div class="switch-row">
+      <span>Afficher le logo</span>
+      <label class="switch">
+        <input type="checkbox" id="showLogo">
+        <span class="slider"></span>
+      </label>
+    </div>
   </section>
 
   <section>
@@ -108,14 +110,17 @@
     <button id="exportBtn" type="button">Capture</button>
   </div>
   <footer>
-    <p style="font-size: 0.875em; margin: 0;text-align: center; color:#8FA89E;">&copy; 2026 HJ. Qassim.</p>
   </footer>
 
 <script>
+  /*
+     DONNÉES & FORMULAIRE
+     */
+
   const HIJRI_MONTHS = [
     "Mouharram", "Safar", "Rabioul-Awwal", "Rabioul-Akhir",
-  "Joumadal-Oula", "Joumadal-Akhira", "Rajab", "Cha'bân",
-  "Ramadan", "Chawwal", "Dhou al-Qi'da", "Dhoul-Hijja"
+    "Joumadal-Oula", "Joumadal-Akhira", "Rajab", "Cha'bân",
+    "Ramadan", "Chawwal", "Dhou al-Qi'da", "Dhoul-Hijja"
   ];
 
   function gregorianToHijri(gy, gm, gd, offset){
@@ -142,7 +147,7 @@
   const hijriPreviewEl = document.getElementById('hijriPreview');
 
   function refreshHijriPreview(){
-    if (!hijriValueEl || !hijriPreviewEl) return; // évite un plantage si l'élément est absent
+    if (!hijriValueEl || !hijriPreviewEl) return;
     hijriValueEl.textContent = (hijriOffset > 0 ? '+' : '') + hijriOffset;
     const now = new Date();
     const h = gregorianToHijri(now.getFullYear(), now.getMonth() + 1, now.getDate(), hijriOffset);
@@ -198,6 +203,27 @@
     statusEl.className = kind || '';
   }
 
+  // Construit l'objet envoyé au serveur (utilisé par Enregistrer ET par Capture)
+  function buildPayload(){
+    return {
+      mosqueName:    els.mosqueName    ? els.mosqueName.value.trim() : '',
+      showLogo:      els.showLogo      ? els.showLogo.checked        : false,
+      hijriOffset:   hijriOffset,
+      showGregorian: els.showGregorian ? els.showGregorian.checked   : true,
+      showHijri:     els.showHijri     ? els.showHijri.checked       : true,
+      prayers: {
+        fajr:    els.fajr    ? els.fajr.value    : '',
+        zuhr:    els.zuhr    ? els.zuhr.value    : '',
+        asr:     els.asr     ? els.asr.value     : '',
+        maghrib: els.maghrib ? els.maghrib.value : '',
+        isha:    els.isha    ? els.isha.value    : '',
+        jumuah:  els.jumuah  ? els.jumuah.value  : '',
+      },
+      footerMessage: els.footerMessage ? els.footerMessage.value : '',
+      showFooter:    els.showFooter    ? els.showFooter.checked  : false,
+    };
+  }
+
   refreshHijriPreview();
 
   fetch('/api/data')
@@ -205,24 +231,12 @@
     .then(fill)
     .catch(() => setStatus("Impossible de charger les données. Vérifiez que le téléphone est bien sur le même Wi-Fi.", 'err'));
 
+  /*
+     ENREGISTREMENT
+     */
+
   if (saveBtn) saveBtn.addEventListener('click', () => {
-    const payload = {
-      mosqueName: els.mosqueName ? els.mosqueName.value.trim() : '',
-      showLogo: els.showLogo ? els.showLogo.checked : false,
-      hijriOffset: hijriOffset,
-      showGregorian: els.showGregorian ? els.showGregorian.checked : true,
-      showHijri: els.showHijri ? els.showHijri.checked : true,
-      prayers: {
-        fajr: els.fajr ? els.fajr.value : '',
-        zuhr: els.zuhr ? els.zuhr.value : '',
-        asr: els.asr ? els.asr.value : '',
-        maghrib: els.maghrib ? els.maghrib.value : '',
-        isha: els.isha ? els.isha.value : '',
-        jumuah: els.jumuah ? els.jumuah.value : '',
-      },
-      footerMessage: els.footerMessage ? els.footerMessage.value : '',
-      showFooter: els.showFooter ? els.showFooter.checked : false,
-    };
+    const payload = buildPayload();
 
     saveBtn.disabled = true;
     setStatus('Enregistrement…');
@@ -234,7 +248,7 @@
     })
       .then((r) => { if (!r.ok) throw new Error('bad status'); return r.json(); })
       .then(() => {
-        setStatus('Enregistré ✓ — l\'écran est à jour', 'ok');
+        setStatus("Enregistré ✓ — l'écran est à jour", 'ok');
         saveBtn.disabled = false;
       })
       .catch(() => {
@@ -243,261 +257,233 @@
       });
   });
 
-  const EXPORT_W = 1920, EXPORT_H = 1080; // résolution TV cible
+  /*
+     CAPTURE RÉELLE DE L'ÉCRAN TV
+    
+     On charge /tv.html dans un iframe caché 1920×1080, on lui
+     pousse les valeurs actuelles du formulaire, on attend les
+     polices, puis on sérialise #stage dans un SVG <foreignObject>
+     (avec les @font-face inlinées en base64 et le logo en
+     data:URI). Enfin on dessine ce SVG sur un canvas 1920×1080.
+     */
 
-function capitalizeExport(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  const TV_W = 1920;
+  const TV_H = 1080;
 
-function wrapCanvasText(ctx, text, maxWidth){
-  const words = text.split(' ');
-  const lines = [];
-  let line = '';
-  words.forEach((w) => {
-    const test = line ? line + ' ' + w : w;
-    if (ctx.measureText(test).width > maxWidth && line) {
-      lines.push(line);
-      line = w;
-    } else {
-      line = test;
-    }
-  });
-  if (line) lines.push(line);
-  return lines;
-}
-
-function roundRect(ctx, x, y, w, h, r){
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
-
-function loadImageSafe(src){
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = () => resolve(null);
-    img.src = src;
-  });
-}
-
-async function buildExportCanvas(){
-  // 1) S'assurer que les 3 polices sont prêtes côté admin
-  try {
-    await Promise.all([
-      document.fonts.load("700 80px 'arabicFont'"),
-      document.fonts.load("600 125px 'primaryFont'"),
-      document.fonts.load("900 110px 'arialBlack'"),
-      document.fonts.load("italic 400 24px 'arabicFont'"),
-      document.fonts.load("600 60px 'arabicFont'"),
-      document.fonts.load("400 60px 'primaryFont'"),
-    ]);
-    await document.fonts.ready;
-  } catch(e){ /* polices absentes → fallback */ }
-
-  const canvas = document.createElement('canvas');
-  canvas.width  = EXPORT_W;
-  canvas.height = EXPORT_H;
-  const ctx = canvas.getContext('2d');
-
-  const COL = {
-    bgDeep: '#0A1F1C', bgPanel: '#12302B', bgPanelActive: '#1B3F36',
-    divider: '#24443C', gold: '#C9A227', goldBright: '#E7C765',
-    text: '#F5F1E6', muted: '#8FA89E'
-  };
-
-  // Fond (radial-gradient identique à style-tv.css)
-  const grad = ctx.createRadialGradient(
-    EXPORT_W/2, EXPORT_H*0.30, 0,
-    EXPORT_W/2, EXPORT_H*0.30, EXPORT_W*0.75
-  );
-  grad.addColorStop(0,   '#123A32');
-  grad.addColorStop(0.6, COL.bgDeep);
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, EXPORT_W, EXPORT_H);
-
-  ctx.textAlign    = 'center';
-  ctx.textBaseline = 'alphabetic';
-
-  // ============ HEADER ============
-  // h1 : 80px, arabicFont, weight 700, line-height 1.15
-  let y = 70;
-  ctx.font      = "700 80px 'arabicFont', 'primaryFont', 'Roboto', sans-serif";
-  ctx.fillStyle = COL.goldBright;
-  ctx.fillText(els.mosqueName.value || '', EXPORT_W/2, y + 80);
-  y += 92 + 16;                        // line-height + margin-top du .meta
-
-  // clock : 125px, primaryFont, weight 600
-  const now = new Date();
-  const clockStr = now.toLocaleTimeString('fr-FR',
-    { hour: '2-digit', minute: '2-digit'});
-  ctx.font      = "600 125px 'primaryFont', 'Roboto', sans-serif";
-  ctx.fillStyle = COL.text;
-  ctx.fillText(clockStr, EXPORT_W/2, y + 125);
-  y += 125 + 10;                       // gap:10px du .meta
-
-  // displayDate : 60px, primaryFont, weight 400, uppercase
-  const gregorian = capitalizeExport(now.toLocaleDateString('fr-FR',
-    { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' }));
-  const h  = gregorianToHijri(now.getFullYear(), now.getMonth() + 1, now.getDate(), hijriOffset);
-  const hijri = `${h.day} ${HIJRI_MONTHS[h.month - 1]} ${h.year}`;
-  const dateParts = [];
-  if (els.showGregorian && els.showGregorian.checked) dateParts.push(gregorian);
-  if (els.showHijri     && els.showHijri.checked)     dateParts.push(hijri);
-  const dateLine = dateParts.join('   ✼   ').toUpperCase();
-  ctx.font      = "400 60px 'primaryFont', 'Roboto', sans-serif";
-  ctx.fillStyle = COL.text;
-  ctx.fillText(dateLine, EXPORT_W/2, y + 60);
-  y += 78;                             // line-height 1.3
-
-  // ============ DIVIDER (700px, marges 30px haut/bas) ============
-  y += 30;
-  const divW = 700;
-  const divX = (EXPORT_W - divW) / 2;
-  const divY = y + 7;
-  ctx.strokeStyle = COL.divider;
-  ctx.lineWidth   = 1;
-  ctx.beginPath();
-  ctx.moveTo(divX, divY);
-  ctx.lineTo(divX + divW/2 - 30, divY);
-  ctx.moveTo(divX + divW/2 + 30, divY);
-  ctx.lineTo(divX + divW, divY);
-  ctx.stroke();
-  ctx.save();
-  ctx.translate(EXPORT_W/2, divY);
-  ctx.rotate(Math.PI / 4);
-  ctx.fillStyle = COL.gold;
-  ctx.fillRect(-7, -7, 14, 14);
-  ctx.restore();
-  y += 14 + 30;
-
-  // ============ GRILLE (1700px, gap 24, cartes 220px) ============
-  const order       = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha', 'jumuah'];
-  const labels      = { fajr:'FAJR', zuhr:'ZOUHR', asr:'ASSR',
-                        maghrib:'MAGHRIB', isha:'ISHA', jumuah:"JOUM'AH" };
-  const dailyOrder  = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
-
-  const nowMin = now.getHours() * 60 + now.getMinutes();
-  function parseHM(str){
-    const m = (str || '').match(/^(\d{1,2}):(\d{2})$/);
-    return m ? (+m[1]) * 60 + (+m[2]) : null;
+  function escapeXMLText(s){
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
   }
-  let nextKey = null, best = Infinity;
-  dailyOrder.forEach((k) => {
-    const mins = parseHM(els[k].value);
-    if (mins === null) return;
-    const diff = mins - nowMin;
-    if (diff >= 0 && diff < best) { best = diff; nextKey = k; }
-  });
-  if (!nextKey) nextKey = 'fajr';
 
-  const gridW  = 1700;
-  const gridX  = (EXPORT_W - gridW) / 2;
-  const gap    = 24;
-  const cellW  = (gridW - gap * 2) / 3;
-  const cellH  = 220;
-  const gridY  = y;
-
-  // letter-spacing (Chrome/Edge ≥ 99, ignoré ailleurs)
-  const supportsSpacing = 'letterSpacing' in ctx;
-
-  order.forEach((key, i) => {
-    const col = i % 3, row = Math.floor(i / 3);
-    const x   = gridX + col * (cellW + gap);
-    const yy  = gridY + row * (cellH + gap);
-    const isNext = key === nextKey;
-
-    // carte
-    roundRect(ctx, x, yy, cellW, cellH, 18);
-    ctx.fillStyle = isNext ? COL.bgPanelActive : COL.bgPanel;
-    ctx.fill();
-    ctx.lineWidth   = isNext ? 2 : 1;
-    ctx.strokeStyle = isNext ? COL.gold : COL.divider;
-    ctx.stroke();
-
-    // label : 60px arabicFont weight 600 + letter-spacing 0.08em (=4.8px)
-    if (supportsSpacing) ctx.letterSpacing = '4.8px';
-    ctx.font      = "600 60px 'arabicFont', 'primaryFont', 'Roboto', sans-serif";
-    ctx.fillStyle = isNext ? COL.goldBright : COL.muted;
-    ctx.fillText(labels[key], x + cellW/2, yy + cellH/2 - 20);
-
-    // time : 110px arialBlack weight 800
-    if (supportsSpacing) ctx.letterSpacing = '0px';
-    ctx.font      = "800 110px 'arialBlack', 'Roboto', sans-serif";
-    ctx.fillStyle = isNext ? COL.goldBright : COL.text;
-    ctx.fillText(els[key].value || '--:--', x + cellW/2, yy + cellH/2 + 90);
-  });
-  y = gridY + cellH * 2 + gap;
-
-  // ============ FOOTER (border-top 1200px, texte 24px italique) ============
-  if (els.showFooter && els.showFooter.checked && els.footerMessage.value.trim()) {
-    const msg = els.footerMessage.value.trim();
-    y += 30;
-
-    ctx.strokeStyle = COL.divider;
-    ctx.lineWidth   = 1;
-    ctx.beginPath();
-    ctx.moveTo((EXPORT_W - 1200)/2, y);
-    ctx.lineTo((EXPORT_W + 1200)/2, y);
-    ctx.stroke();
-
-    y += 20;
-
-    const isArabic = /[\u0600-\u06FF]/.test(msg);
-    ctx.direction  = isArabic ? 'rtl' : 'ltr';
-    ctx.font       = "italic 400 24px 'arabicFont', 'primaryFont', 'Roboto', sans-serif";
-    ctx.fillStyle  = COL.text;
-
-    const lines = wrapCanvasText(ctx, msg, 1200);
-    lines.slice(0, 3).forEach((line) => {
-      y += 36;                    // line-height 1.5 × 24
-      ctx.fillText(line, EXPORT_W/2, y);
+  async function fetchAsDataURI(url){
+    const r = await fetch(url, { cache: 'force-cache' });
+    if (!r.ok) throw new Error('HTTP ' + r.status + ' sur ' + url);
+    const blob = await r.blob();
+    return await new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload  = () => resolve(fr.result);
+      fr.onerror = () => reject(fr.error);
+      fr.readAsDataURL(blob);
     });
-    ctx.direction = 'ltr';
   }
 
-  // ============ LOGO (max 280×120, top 30 / right 40) ============
-  if (els.showLogo && els.showLogo.checked) {
-    const img = await loadImageSafe('/logo.png');
-    if (img) {
-      const maxH = 120, maxW = 280;
-      const ratio = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight, 1);
-      const w = img.naturalWidth  * ratio;
-      const h = img.naturalHeight * ratio;
-      ctx.drawImage(img, EXPORT_W - w - 40, 30, w, h);
+  // Construit les @font-face avec les fichiers en base64
+  async function buildEmbeddedFontCSS(){
+    const fonts = [
+      { family: 'primaryFont', url: '/font/Poppins-Black.ttf',
+        format: 'truetype', weight: 900 },
+      { family: 'arialBlack',  url: '/font/arial_black.ttf',
+        format: 'truetype', weight: 900 },
+      { family: 'arabicFont',  url: '/font/AligarhArabicFREEPERSONALUSE-Bold.otf',
+        format: 'opentype', weight: 400 }
+    ];
+    const parts = [];
+    for (const f of fonts){
+      try {
+        const uri = await fetchAsDataURI(f.url);
+        parts.push(
+          `@font-face{font-family:'${f.family}';` +
+          `src:url("${uri}") format('${f.format}');` +
+          `font-weight:${f.weight};font-style:normal;font-display:block;}`
+        );
+      } catch (e){
+        console.warn('Police introuvable (ignorée) :', f.url, e);
+      }
     }
+    return parts.join('\n');
   }
 
-  return canvas;
-}
+  async function captureTVSnapshot(){
+    // 1. iframe caché sur /tv.html
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('aria-hidden', 'true');
+    iframe.style.cssText =
+      'position:fixed;left:-20000px;top:0;width:' + TV_W + 'px;height:' + TV_H + 'px;' +
+      'border:0;pointer-events:none;';
+    iframe.src = '/tv.html';
 
-const exportBtn = document.getElementById('exportBtn');
-exportBtn.addEventListener('click', async () => {
-  exportBtn.disabled = true;
-  const prevLabel = exportBtn.textContent;
-  exportBtn.textContent = 'Génération…';
-  try {
-    const canvas = await buildExportCanvas();
-    canvas.toBlob((blob) => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const stamp = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19);
-      a.href = url;
-      a.download = `horaires-${stamp}.png`;
-      a.click();
-      URL.revokeObjectURL(url);
+    const loaded = new Promise((resolve) => {
+      iframe.addEventListener('load', resolve, { once: true });
+    });
+    document.body.appendChild(iframe);
+    await loaded;
+
+    const win = iframe.contentWindow;
+    const doc = win.document;
+
+    // 2. On laisse passer la micro-tâche SSE initiale, puis on pousse
+    //    les valeurs actuelles du formulaire admin.
+    await new Promise((r) => setTimeout(r, 150));
+    const payload = buildPayload();
+    try {
+      if (typeof win.render === 'function')    win.render(payload);
+      if (typeof win.tickClock === 'function') win.tickClock();
+    } catch (e){ /* ignore */ }
+
+    // 3. Attente du chargement des polices (importantes !)
+    try { await doc.fonts.ready; } catch (e){}
+    await new Promise((r) => setTimeout(r, 200));
+
+    // 4. Récupération du CSS TV + polices inlinées
+    let cssText = await fetch('/style-tv.css').then((r) => r.text());
+    // Retire les @font-face d'origine (on les remplace par celles en base64)
+    cssText = cssText.replace(/@font-face\s*\{[^}]*\}/g, '');
+    const fontCSS = await buildEmbeddedFontCSS();
+
+    // 5. Clone de la scène (#stage)
+    const stageSrc = doc.getElementById('stage');
+    const stageEl  = stageSrc.cloneNode(true);
+
+    // On neutralise le scale appliqué par fitStage() (iframe déjà 1920x1080)
+    stageEl.style.transform       = 'scale(1)';
+    stageEl.style.transformOrigin = 'top left';
+    stageEl.style.position        = 'absolute';
+    stageEl.style.top             = '0';
+    stageEl.style.left            = '0';
+
+    // Suppression des gestionnaires inline
+    stageEl.querySelectorAll('*').forEach((el) => {
+      el.removeAttribute('onerror');
+      el.removeAttribute('onload');
+    });
+
+    // Logo → data URI (les ressources externes ne se chargent pas dans un SVG-image)
+    const logoEl = stageEl.querySelector('#logo');
+    if (logoEl){
+      if (payload.showLogo){
+        try {
+          const uri = await fetchAsDataURI('/logo.png');
+          logoEl.setAttribute('src', uri);
+        } catch (e){
+          logoEl.style.display = 'none';
+        }
+      } else {
+        logoEl.style.display = 'none';
+      }
+    }
+
+    // 6. Sérialisation XHTML (indispensable : <img … /> auto-fermé)
+    const stageXML = new XMLSerializer().serializeToString(stageEl);
+
+    // 7. Construction du SVG <foreignObject>
+    const bgStyle =
+      'width:' + TV_W + 'px;height:' + TV_H + 'px;margin:0;padding:0;' +
+      'overflow:hidden;position:relative;' +
+      'background:radial-gradient(ellipse at 50% 30%, #123A32 0%, #0A1F1C 60%);' +
+      "color:#F5F1E6;font-family:'primaryFont','Roboto','Noto Sans',sans-serif;";
+
+    const svgMarkup =
+      '<svg xmlns="http://www.w3.org/2000/svg" ' +
+        'width="' + TV_W + '" height="' + TV_H + '" ' +
+        'viewBox="0 0 ' + TV_W + ' ' + TV_H + '">' +
+        '<foreignObject x="0" y="0" width="' + TV_W + '" height="' + TV_H + '">' +
+          '<div xmlns="http://www.w3.org/1999/xhtml" style="' + bgStyle + '">' +
+            '<style>' +
+              escapeXMLText(fontCSS) + '\n' +
+              escapeXMLText(cssText) +
+            '</style>' +
+            stageXML +
+          '</div>' +
+        '</foreignObject>' +
+      '</svg>';
+
+    // data: URI → jamais de "taint" du canvas, même sur Android WebView
+    const svgURL = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgMarkup);
+
+    // 8. SVG → Image → Canvas
+    const img = new Image();
+    await new Promise((resolve, reject) => {
+      img.onload  = resolve;
+      img.onerror = () => reject(new Error(
+        'Rendu SVG impossible (foreignObject ou polices non supportés ?)'
+      ));
+      img.crossOrigin = 'anonymous';
+      img.src = svgURL;
+    });
+
+    const canvas = document.createElement('canvas');
+    canvas.width  = TV_W;
+    canvas.height = TV_H;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#0A1F1C';
+    ctx.fillRect(0, 0, TV_W, TV_H);
+    ctx.drawImage(img, 0, 0, TV_W, TV_H);
+
+    iframe.remove();
+
+    return canvas;
+  }
+
+  /*
+     BOUTON CAPTURE
+     */
+
+  const exportBtn = document.getElementById('exportBtn');
+  if (exportBtn) exportBtn.addEventListener('click', async () => {
+    const prevLabel = exportBtn.textContent;
+    exportBtn.disabled = true;
+    exportBtn.textContent = 'Génération…';
+    setStatus("Capture de l'écran en cours…");
+
+    try {
+      const canvas = await captureTVSnapshot();
+
+      await new Promise((resolve) => {
+        canvas.toBlob((blob) => {
+          const url   = URL.createObjectURL(blob);
+          const stamp = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19);
+          const a     = document.createElement('a');
+          a.href     = url;
+          a.download = 'horaires-' + stamp + '.png';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          resolve();
+        }, 'image/png');
+      });
+
+      setStatus('Capture enregistrée ✓', 'ok');
+    } catch (e){
+      console.error(e);
+      setStatus('Erreur : ' + (e && e.message ? e.message : 'capture impossible'), 'err');
+    } finally {
       exportBtn.disabled = false;
       exportBtn.textContent = prevLabel;
-    }, 'image/png');
-  } catch (e) {
-    exportBtn.disabled = false;
-    exportBtn.textContent = prevLabel;
-    setStatus("Erreur lors de la génération de l'image.", 'err');
-  }
-});
+    }
+  });
 
+  // Affichage de la version de l'application
+  fetch('/api/version')
+    .then((r) => r.json())
+    .then((d) => {
+      const el = document.getElementById('appVersion');
+      if (el) el.textContent = 'v' + (d.version || '?');
+    })
+    .catch(() => {
+      const el = document.getElementById('appVersion');
+      if (el) el.textContent = 'v?';
+    });
+    
 </script>
 
 </body>

@@ -1,9 +1,9 @@
-@font-face {
+/*@font-face {
   font-family: 'primaryFont';
   src: url('font/Poppins-Black.ttf') format('truetype');
   font-weight: 900;
   font-display: swap;
-}
+}*/
 
 @font-face {
   font-family: 'arialBlack';
@@ -28,7 +28,7 @@
   --gold-bright: #E7C765;
   --text-primary: #F5F1E6;
   --text-muted: #8FA89E;
-  --fs-primary-font: 'primaryFont', 'Roboto', 'Noto Sans', sans-serif;
+  --fs-primary-font: 'arialBlack', 'Roboto', 'Noto Sans', sans-serif;
   --fs-arabic-font:  'arabicFont',  'primaryFont', 'Roboto', sans-serif;
   --fs-arial-black: 'arialBlack', sans-serif;
 }
@@ -251,8 +251,8 @@ h1{
   bottom: 20px;
   right: 30px;
   margin: 0;
-  font-size: 15px;
-  color: #2b695e;
+  font-size: 13px;
+  color: #1d4b43;
   font-family: 'Arial Narrow', Arial, sans-serif;
   white-space: nowrap;
 }

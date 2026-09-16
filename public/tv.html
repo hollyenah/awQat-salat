@@ -38,7 +38,7 @@
   <footer class="footer" id="footerWrap" hidden>
     <p id="footerMessage"></p>
   </footer>
-  <p class="watermark">&copy; 2026 HJ. Qassim.</p>
+    <p class="watermark">&copy; 2026 Qassim. <span id="appVersion">v...</span></p>
 
                                             </div>
 
@@ -236,6 +236,15 @@ function fitStage(){
       '  ->  vw=' + vw + ' vh=' + vh + ' scale=' + scale.toFixed(3);
   }
 }
+
+  // Version de l'app, récupérée une seule fois au démarrage
+  fetch('/api/version')
+    .then((r) => r.json())
+    .then((d) => {
+      const el = document.getElementById('appVersion');
+      if (el && d.version) el.textContent = '· v' + d.version;
+    })
+    .catch(() => {});
 
 </script>
 </body>

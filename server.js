@@ -16,13 +16,26 @@ const PORT = 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const DATA_FILE = path.join(__dirname, 'data.json');
 
+const MIME = {
+  '.html': 'text/html; charset=utf-8',
+  '.css':  'text/css; charset=utf-8',
+  '.js':   'application/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png':  'image/png',
+  '.svg':  'image/svg+xml',
+  '.ico':  'image/x-icon',
+  '.ttf':  'font/ttf',
+  '.otf':  'font/otf',
+  '.woff': 'font/woff',
+  '.woff2':'font/woff2'
+};
+
 const DEFAULT_DATA = {
   mosqueName: 'MASJID',
-    hijriOffset: 0,
-    showGregorian: true,
-    showHijri: true,
-    showLogo: false,
-
+  hijriOffset: 0,
+  showGregorian: true,
+  showHijri: true,
+  showLogo: false,
   prayers: {
     fajr: '05:30',
     zuhr: '13:15',
@@ -34,6 +47,14 @@ const DEFAULT_DATA = {
   footerMessage: 'MADE by HJ. QASSIM',
   showFooter: true
 };
+
+let APP_VERSION = 'dev';
+try {
+  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
+  if (pkg && pkg.version) APP_VERSION = pkg.version;
+} catch (e) {
+  console.warn('package.json introuvable ou invalide — version = "dev"');
+}
 
 // ---- Persistance des données -------------------------------------------
 
@@ -71,16 +92,6 @@ function broadcast(data) {
 
 // ---- Fichiers statiques ---------------------------------------------
 
-const MIME = {
-  '.html': 'text/html; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.js': 'application/javascript; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.png': 'image/png',
-  '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon'
-};
-
 function serveStatic(reqPath, res) {
   const safePath = path.normalize(reqPath === '/' ? '/tv.html' : reqPath);
   const filePath = path.join(PUBLIC_DIR, safePath);
@@ -107,7 +118,7 @@ function readBody(req, cb) {
   let body = '';
   req.on('data', (chunk) => {
     body += chunk;
-    if (body.length > 1e6) req.destroy(); // garde-fou anti-surcharge
+    if (body.length > 1e6) req.destroy();
   });
   req.on('end', () => cb(body));
 }
@@ -128,14 +139,18 @@ function localAddresses() {
 const server = http.createServer((req, res) => {
   const url = req.url.split('?')[0];
 
-  // Lecture des données actuelles
+    if (url === '/api/version' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ version: APP_VERSION }));
+    return;
+  }
+
   if (url === '/api/data' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     res.end(JSON.stringify(state));
     return;
   }
 
-  // Mise à jour des données depuis le téléphone
   if (url === '/api/data' && req.method === 'POST') {
     readBody(req, (body) => {
       try {
@@ -157,7 +172,6 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Flux temps réel écouté par l'écran TV
   if (url === '/api/events' && req.method === 'GET') {
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
@@ -172,7 +186,6 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Page pratique indiquant l'adresse à saisir sur le téléphone
   if (url === '/info' && req.method === 'GET') {
     const addresses = localAddresses();
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
@@ -197,6 +210,7 @@ server.listen(PORT, () => {
   const addresses = localAddresses();
   console.log('=================================================');
   console.log(' Serveur "Horaires de Prière" démarré');
+  console.log(` Version :              ${APP_VERSION}`);
   console.log(` Écran TV local :       http://localhost:${PORT}/`);
   console.log(` Administration locale : http://localhost:${PORT}/admin.html`);
   console.log(' Adresses réseau local (à utiliser depuis le téléphone) :');
