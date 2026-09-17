@@ -37,12 +37,14 @@ const DEFAULT_DATA = {
   showHijri: true,
   showLogo: false,
   prayers: {
-    fajr: '05:30',
-    zuhr: '13:15',
-    asr: '16:45',
+    sahour:  '04:30',
+    fajr:    '05:30',
+    sunrise: '07:00',
+    zuhr:    '13:15',
+    asr:     '16:45',
     maghrib: '19:20',
-    isha: '20:45',
-    jumuah: '13:30'
+    isha:    '20:45',
+    jumuah:  '13:30'
   },
   footerMessage: 'MADE by HJ. QASSIM',
   showFooter: true

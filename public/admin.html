@@ -26,7 +26,8 @@
   <section>
     <h2>Masjid</h2>
     <label for="mosqueName">Nom de la Masjid</label>
-    <input type="text" id="mosqueName" placeholder="MASJID">
+<textarea id="mosqueName" placeholder="MASJID" rows="2"></textarea>
+<p class="hint">Appuyez sur Entrée pour ajouter un retour à la ligne (ex. nom en français / nom en arabe).</p>
 
     <label>Date affichée</label>
     <p class="hint">Calculée automatiquement. Si la date hijri ne correspond pas à la vue de la lune, ajustez ici :</p>
@@ -63,31 +64,39 @@
   <section>
     <h2>Horaires de prière</h2>
     <div class="prayer-grid">
-      <div class="field">
-        <label for="fajr">Fajr</label>
-        <input type="time" id="fajr">
-      </div>
-      <div class="field">
-        <label for="zuhr">Zuhr</label>
-        <input type="time" id="zuhr">
-      </div>
-      <div class="field">
-        <label for="asr">Asr</label>
-        <input type="time" id="asr">
-      </div>
-      <div class="field">
-        <label for="maghrib">Maghrib</label>
-        <input type="time" id="maghrib">
-      </div>
-      <div class="field">
-        <label for="isha">Isha</label>
-        <input type="time" id="isha">
-      </div>
-      <div class="field">
-        <label for="jumuah">Jum'ah</label>
-        <input type="time" id="jumuah">
-      </div>
-    </div>
+  <div class="field">
+    <label for="sahour">Sahour</label>
+    <input type="time" id="sahour">
+  </div>
+  <div class="field">
+    <label for="fajr">Fajr</label>
+    <input type="time" id="fajr">
+  </div>
+  <div class="field">
+    <label for="sunrise">Lever du soleil</label>
+    <input type="time" id="sunrise">
+  </div>
+  <div class="field">
+    <label for="zuhr">Zuhr</label>
+    <input type="time" id="zuhr">
+  </div>
+  <div class="field">
+    <label for="asr">Asr</label>
+    <input type="time" id="asr">
+  </div>
+  <div class="field">
+    <label for="maghrib">Maghrib</label>
+    <input type="time" id="maghrib">
+  </div>
+  <div class="field">
+    <label for="isha">Isha</label>
+    <input type="time" id="isha">
+  </div>
+  <div class="field">
+    <label for="jumuah">Jum'ah</label>
+    <input type="time" id="jumuah">
+  </div>
+</div>
   </section>
 
   <section>
@@ -165,20 +174,23 @@
     refreshHijriPreview();
   });
 
-  const els = {
-    mosqueName: document.getElementById('mosqueName'),
-    fajr: document.getElementById('fajr'),
-    zuhr: document.getElementById('zuhr'),
-    asr: document.getElementById('asr'),
-    maghrib: document.getElementById('maghrib'),
-    isha: document.getElementById('isha'),
-    jumuah: document.getElementById('jumuah'),
-    footerMessage: document.getElementById('footerMessage'),
-    showFooter: document.getElementById('showFooter'),
-    showGregorian: document.getElementById('showGregorian'),
-    showHijri: document.getElementById('showHijri'),
-    showLogo: document.getElementById('showLogo'),
-  };
+const els = {
+  mosqueName: document.getElementById('mosqueName'),
+  sahour:  document.getElementById('sahour'),
+  fajr:    document.getElementById('fajr'),
+  sunrise: document.getElementById('sunrise'),
+  zuhr:    document.getElementById('zuhr'),
+  asr:     document.getElementById('asr'),
+  maghrib: document.getElementById('maghrib'),
+  isha:    document.getElementById('isha'),
+  jumuah:  document.getElementById('jumuah'),
+  footerMessage: document.getElementById('footerMessage'),
+  showFooter: document.getElementById('showFooter'),
+  showGregorian: document.getElementById('showGregorian'),
+  showHijri: document.getElementById('showHijri'),
+  showLogo: document.getElementById('showLogo'),
+};
+
   const saveBtn = document.getElementById('saveBtn');
   const statusEl = document.getElementById('status');
 
@@ -188,10 +200,10 @@
     refreshHijriPreview();
     if (els.showGregorian) els.showGregorian.checked = data.showGregorian !== false;
     if (els.showHijri) els.showHijri.checked = data.showHijri !== false;
-    const p = data.prayers || {};
-    ['fajr','zuhr','asr','maghrib','isha','jumuah'].forEach((k) => {
-      if (els[k]) els[k].value = p[k] || '';
-    });
+   const p = data.prayers || {};
+  ['sahour','fajr','sunrise','zuhr','asr','maghrib','isha','jumuah'].forEach((k) => {
+    if (els[k]) els[k].value = p[k] || '';
+  });
     if (els.footerMessage) els.footerMessage.value = data.footerMessage || '';
     if (els.showFooter) els.showFooter.checked = !!data.showFooter;
     if (els.showLogo) els.showLogo.checked = !!data.showLogo;
@@ -212,7 +224,9 @@
       showGregorian: els.showGregorian ? els.showGregorian.checked   : true,
       showHijri:     els.showHijri     ? els.showHijri.checked       : true,
       prayers: {
+        sahour:  els.sahour  ? els.sahour.value  : '',
         fajr:    els.fajr    ? els.fajr.value    : '',
+        sunrise: els.sunrise ? els.sunrise.value : '',
         zuhr:    els.zuhr    ? els.zuhr.value    : '',
         asr:     els.asr     ? els.asr.value     : '',
         maghrib: els.maghrib ? els.maghrib.value : '',

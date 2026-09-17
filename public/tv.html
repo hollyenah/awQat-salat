@@ -27,13 +27,15 @@
   </div>
 
   <main class="grid" id="grid">
+    <div class="card" data-key="sahour"><span class="label">SAHOUR</span><span class="time">--:--</span></div>
     <div class="card" data-key="fajr"><span class="label">FAJR</span><span class="time">--:--</span></div>
+    <div class="card" data-key="sunrise"><span class="label">LEVER DU SOLEIL</span><span class="time">--:--</span></div>
     <div class="card" data-key="zuhr"><span class="label">ZOUHR</span><span class="time">--:--</span></div>
     <div class="card" data-key="asr"><span class="label">ASSR</span><span class="time">--:--</span></div>
     <div class="card" data-key="maghrib"><span class="label">MAGHRIB</span><span class="time">--:--</span></div>
     <div class="card" data-key="isha"><span class="label">ISHA</span><span class="time">--:--</span></div>
     <div class="card" data-key="jumuah"><span class="label">JOUM'AH</span><span class="time">--:--</span></div>
-  </main>
+</main>
 
   <footer class="footer" id="footerWrap" hidden>
     <p id="footerMessage"></p>
@@ -55,7 +57,7 @@
   const cardEls = {};
   document.querySelectorAll('.card').forEach((c) => { cardEls[c.dataset.key] = c; });
 
-  const DAILY_ORDER = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha']; // Jum'ah n'entre pas dans le calcul "prochaine prière"
+  const DAILY_ORDER = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
   let currentPrayers = {};
 
   let hijriOffset = 0;

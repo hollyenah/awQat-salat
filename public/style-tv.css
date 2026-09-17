@@ -99,6 +99,7 @@ h1{
   margin-right: auto;
   overflow-wrap: break-word;
   word-wrap: break-word;
+  white-space: pre-line;
 }
 
 .meta{
@@ -155,15 +156,13 @@ h1{
   border-radius:2px;
   flex-shrink:0;
 }
-
-/* GRILLE */
 .grid{
   width: 1700px;
   max-width: 100%;
   display:grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  gap: 24px;
+  gap: 20px;
 }
 
 .card{
@@ -174,33 +173,32 @@ h1{
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap: 10px;
-  padding: 28px 16px;
-  min-height: 220px;
+  gap: 8px;
+  padding: 20px 12px;
+  min-height: 190px;
   min-width: 0;
-  overflow: hidden;                /* ✅ barrière interne */
+  overflow: hidden;
   text-align: center;
   transition: background .5s ease, border-color .5s ease, box-shadow .5s ease;
 }
 
 .card .label{
-  font-size: 60px;
+  font-size: 42px;              /* était 60px */
   font-family: var(--fs-arabic-font);
   font-weight:600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--text-muted);
   max-width: 100%;
   overflow-wrap: break-word;
   word-wrap: break-word;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .card .time{
-  font-size: 110px;
+  font-size: 84px;              /* était 110px */
   font-family: var(--fs-arial-black);
   font-weight:800;
   font-variant-numeric: tabular-nums;
-  /*letter-spacing: -0.05em;*/
   line-height:1;
   color: var(--text-primary);
 }
