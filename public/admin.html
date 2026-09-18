@@ -7,10 +7,10 @@
 <link rel="stylesheet" href="style-admin.css">
 <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 
-  <!-- Pour iOS (iPhone / iPad) -->
+  <!-- iOS favicon -->
   <link rel="apple-touch-icon" sizes="512x512" href="img/favicon.png">
 
-  <!-- Pour Android / Chrome -->
+  <!-- Android favicon -->
   <link rel="icon" type="image/png" sizes="512x512" href="img/favicon.png">
 
 </head>
@@ -56,6 +56,14 @@
       <span>Afficher le logo</span>
       <label class="switch">
         <input type="checkbox" id="showLogo">
+        <span class="slider"></span>
+      </label>
+    </div>
+    
+    <div class="switch-row">
+      <span>Afficher le QR code d'administration sur l'écran</span>
+      <label class="switch">
+        <input type="checkbox" id="showQR" checked>
         <span class="slider"></span>
       </label>
     </div>
@@ -189,6 +197,7 @@ const els = {
   showGregorian: document.getElementById('showGregorian'),
   showHijri: document.getElementById('showHijri'),
   showLogo: document.getElementById('showLogo'),
+  showQR: document.getElementById('showQR'),
 };
 
   const saveBtn = document.getElementById('saveBtn');
@@ -207,6 +216,7 @@ const els = {
     if (els.footerMessage) els.footerMessage.value = data.footerMessage || '';
     if (els.showFooter) els.showFooter.checked = !!data.showFooter;
     if (els.showLogo) els.showLogo.checked = !!data.showLogo;
+    if (els.showQR) els.showQR.checked = data.showQR !== false;
   }
 
   function setStatus(text, kind){
@@ -235,6 +245,7 @@ const els = {
       },
       footerMessage: els.footerMessage ? els.footerMessage.value : '',
       showFooter:    els.showFooter    ? els.showFooter.checked  : false,
+      showQR: els.showQR ? els.showQR.checked : true,
     };
   }
 

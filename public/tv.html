@@ -6,12 +6,13 @@
 <title>awQat-salat</title>
 <link rel="stylesheet" href="style-tv.css">
 <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+<script src="qr.js"></script>
 </head>
 <body>
 
   <div class="status-dot" id="statusDot" aria-hidden="true"></div>
 
-                            <div id="stage">
+<div id="stage">
   <img id="logo" class="logo" src="/logo.png" alt="" onerror="this.style.display='none'">
 
   <header class="header">
@@ -40,9 +41,14 @@
   <footer class="footer" id="footerWrap" hidden>
     <p id="footerMessage"></p>
   </footer>
+
+    <!-- QR CODE -->
+    <div class="qr-wrap" id="qrWrap" hidden>
+      <div id="qrSvg"></div>
+    </div>
     <p class="watermark">&copy;2026 awQat-salat.app - Qassim.<span id="appVersion">version?</span></p>
 
-                                            </div>
+</div>
 
 <!--script>window.__DEBUG__ = true;</script-->
 
@@ -144,6 +150,36 @@ function updateDateDisplay(){
     });
   }
 
+  var qrDone = false;
+
+  function updateQR(show, ip, port) {
+  var wrap = document.getElementById('qrWrap');
+  var svgEl = document.getElementById('qrSvg');
+  if (!wrap || !svgEl) {
+    console.warn('QR: éléments manquants dans le DOM');
+    return;
+  }
+  if (!show) { wrap.hidden = true; return; }
+
+  // Déjà généré ? on réaffiche simplement
+  if (svgEl.dataset.done === '1') { wrap.hidden = false; return; }
+
+  try {
+    var host = (ip && port) ? (ip + ':' + port) : window.location.host;
+    var url = 'http://' + host + '/admin.html';
+    console.log('QR: génération pour', url);
+    svgEl.innerHTML = QR.toSVG(url, 4);
+    svgEl.dataset.done = '1';
+    wrap.hidden = false;
+  } catch (e) {
+    console.error('QR generation failed:', e);
+    // On affiche un message visible au lieu de cacher silencieusement
+    svgEl.innerHTML = '<div style="color:#000;font:12px sans-serif;padding:8px">' +
+      'QR err: ' + (e.message || e) + '</div>';
+    wrap.hidden = false;
+  }
+}
+
   function render(data){
     if (!data) return;
     mosqueNameEl.textContent = data.mosqueName || '';
@@ -161,8 +197,9 @@ function updateDateDisplay(){
     footerWrap.hidden = !data.showFooter;
 
     updateHighlight();
-
-    fitStage();   
+    updateQR(data.showQR !== false, data._localIP, data._port);
+    fitStage();
+      
   }
 
   function tickClock(){

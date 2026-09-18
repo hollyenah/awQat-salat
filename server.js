@@ -81,12 +81,17 @@ function saveData(data) {
 
 let state = loadData();
 
-// ---- Diffusion en temps réel vers l'écran TV (Server-Sent Events) ------
+// Diffusion en temps réel vers l'écran TV
 
 let sseClients = [];
 
-function broadcast(data) {
-  const payload = `data: ${JSON.stringify(data)}\n\n`;
+function currentData() {
+  const addrs = localAddresses();
+  return { ...state, _localIP: addrs[0] || 'localhost', _port: PORT };
+}
+
+function broadcast() {
+  const payload = `data: ${JSON.stringify(currentData())}\n\n`;
   sseClients.forEach((res) => {
     try { res.write(payload); } catch (e) { /* client déconnecté */ }
   });
@@ -163,9 +168,9 @@ const server = http.createServer((req, res) => {
           prayers: { ...state.prayers, ...(updates.prayers || {}) }
         };
         saveData(state);
-        broadcast(state);
+        broadcast();
         res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-        res.end(JSON.stringify(state));
+        res.end(JSON.stringify(currentData()));
       } catch (e) {
         res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
         res.end(JSON.stringify({ error: 'JSON invalide' }));
@@ -180,7 +185,7 @@ const server = http.createServer((req, res) => {
       'Cache-Control': 'no-cache',
       'Connection': 'keep-alive'
     });
-    res.write(`data: ${JSON.stringify(state)}\n\n`);
+    res.write(`data: ${JSON.stringify(currentData())}\n\n`);
     sseClients.push(res);
     req.on('close', () => {
       sseClients = sseClients.filter((c) => c !== res);
