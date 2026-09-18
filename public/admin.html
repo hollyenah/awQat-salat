@@ -406,6 +406,10 @@ const els = {
       }
     }
 
+    // Masquer le QR pendant la capture
+    var qrControl = stageEl.querySelector('#qrControl');
+    if (qrControl) qrControl.style.display = 'none';
+
     // 6. Sérialisation XHTML (indispensable : <img … /> auto-fermé)
     const stageXML = new XMLSerializer().serializeToString(stageEl);
 

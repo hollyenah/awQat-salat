@@ -15,6 +15,17 @@
 <div id="stage">
   <img id="logo" class="logo" src="/logo.png" alt="" onerror="this.style.display='none'">
 
+  <!-- Bouton toggle QR + QR code en haut à droite -->
+  <div class="qr-control" id="qrControl">
+    <button class="qr-toggle" id="qrToggle" type="button" title="Afficher / masquer le QR code">
+      <span id="qrToggleIcon">▣</span>
+    </button>
+    <div class="qr-wrap" id="qrWrap" hidden>
+      <div id="qrSvg"></div>
+    </div>
+  </div>
+
+
   <header class="header">
     <h1 id="mosqueName">MASJID</h1>
     <div class="meta">
@@ -41,11 +52,6 @@
   <footer class="footer" id="footerWrap" hidden>
     <p id="footerMessage"></p>
   </footer>
-
-    <!-- QR CODE -->
-    <div class="qr-wrap" id="qrWrap" hidden>
-      <div id="qrSvg"></div>
-    </div>
     <p class="watermark">&copy;2026 awQat-salat.app - Qassim.<span id="appVersion">version?</span></p>
 
 </div>
@@ -152,31 +158,43 @@ function updateDateDisplay(){
 
   var lastQRUrl = '';
 
-function updateQR(show, ip, port) {
-  var wrap = document.getElementById('qrWrap');
-  var svgEl = document.getElementById('qrSvg');
-  if (!wrap || !svgEl) return;
+  // QR code
+  var qrInitialized = false;
+  var qrVisible = false;
 
-  if (!show) { wrap.hidden = true; return; }
-
-  var host = (ip && port) ? (ip + ':' + port) : window.location.host;
-  var url = 'http://' + host + '/admin.html';
-
-  // On régénère uniquement si l'URL a changé (perf) — sinon on garde
-  if (url !== lastQRUrl) {
+  function renderQR(ip, port) {
+    if (qrInitialized) return;
     try {
-      svgEl.innerHTML = QR.toSVG(url, 4);
-      lastQRUrl = url;
-      console.log('QR: URL =', url);
+      var host = (ip && port) ? (ip + ':' + port) : window.location.host;
+      var url = 'http://' + host + '/admin.html';
+      document.getElementById('qrSvg').innerHTML = QR.toSVG(url, 4);
+      qrInitialized = true;
     } catch (e) {
-      console.error('QR generation failed:', e);
-      wrap.hidden = true;
-      return;
+      console.warn('QR generation failed', e);
+      document.getElementById('qrControl').style.display = 'none';
     }
   }
 
-  wrap.hidden = false;
-}
+  function setQRVisible(visible) {
+    qrVisible = visible;
+    document.getElementById('qrWrap').hidden = !visible;
+    document.getElementById('qrToggleIcon').textContent = visible ? '▣' : '▢';
+  }
+
+  function toggleQR() {
+    var newState = !qrVisible;
+    setQRVisible(newState);
+
+    // Sauvegarde côté serveur (comme le toggle admin)
+    fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ showQR: newState })
+    }).catch(function () { /* ignore */ });
+  }
+
+  document.getElementById('qrToggle').addEventListener('click', toggleQR);
+
 
   function render(data){
     if (!data) return;
@@ -195,7 +213,9 @@ function updateQR(show, ip, port) {
     footerWrap.hidden = !data.showFooter;
 
     updateHighlight();
-    updateQR(data.showQR !== false, data._localIP, data._port);
+    // QR code
+    renderQR(data._localIP, data._port);
+    setQRVisible(data.showQR !== false);
     fitStage();
       
   }

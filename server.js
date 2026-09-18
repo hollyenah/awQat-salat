@@ -65,19 +65,23 @@ function loadData() {
   try {
     const raw = fs.readFileSync(DATA_FILE, 'utf8');
     const parsed = JSON.parse(raw);
+    delete parsed.showQR;
     return {
       ...DEFAULT_DATA,
       ...parsed,
+      showQR: true,
       prayers: { ...DEFAULT_DATA.prayers, ...(parsed.prayers || {}) }
     };
   } catch (e) {
     fs.writeFileSync(DATA_FILE, JSON.stringify(DEFAULT_DATA, null, 2));
-    return { ...DEFAULT_DATA };
+    return { ...DEFAULT_DATA, showQR: true };
   }
 }
 
 function saveData(data) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+  const toSave = { ...data };
+  delete toSave.showQR;
+  fs.writeFileSync(DATA_FILE, JSON.stringify(toSave, null, 2));
 }
 
 let state = loadData();

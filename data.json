@@ -1,20 +1,19 @@
 {
-  "mosqueName": "MASJID ABOUBAKR\nمسجد أبو بكر الصديق",
+  "mosqueName": "MASJID ABOUBAKR\nمسجدأبي بكر الصديق",
   "hijriOffset": 0,
   "showGregorian": true,
   "showHijri": true,
   "showLogo": false,
   "prayers": {
-      "sahour": "",
-      "fajr": "",
-      "sunrise": "",
-      "zuhr": "12:30",
-      "asr": "15:30",
-      "maghrib": "",
-      "isha": "",
-      "jumuah": "12:20"
-    },
+    "sahour": "",
+    "fajr": "",
+    "sunrise": "",
+    "zuhr": "12:30",
+    "asr": "15:30",
+    "maghrib": "",
+    "isha": "",
+    "jumuah": "12:20"
+  },
   "footerMessage": "ANTANANARIVO ",
-  "showFooter": false,
-  "showQR": true
+  "showFooter": false
 }
