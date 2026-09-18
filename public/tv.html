@@ -150,34 +150,32 @@ function updateDateDisplay(){
     });
   }
 
-  var qrDone = false;
+  var lastQRUrl = '';
 
-  function updateQR(show, ip, port) {
+function updateQR(show, ip, port) {
   var wrap = document.getElementById('qrWrap');
   var svgEl = document.getElementById('qrSvg');
-  if (!wrap || !svgEl) {
-    console.warn('QR: éléments manquants dans le DOM');
-    return;
-  }
+  if (!wrap || !svgEl) return;
+
   if (!show) { wrap.hidden = true; return; }
 
-  // Déjà généré ? on réaffiche simplement
-  if (svgEl.dataset.done === '1') { wrap.hidden = false; return; }
+  var host = (ip && port) ? (ip + ':' + port) : window.location.host;
+  var url = 'http://' + host + '/admin.html';
 
-  try {
-    var host = (ip && port) ? (ip + ':' + port) : window.location.host;
-    var url = 'http://' + host + '/admin.html';
-    console.log('QR: génération pour', url);
-    svgEl.innerHTML = QR.toSVG(url, 4);
-    svgEl.dataset.done = '1';
-    wrap.hidden = false;
-  } catch (e) {
-    console.error('QR generation failed:', e);
-    // On affiche un message visible au lieu de cacher silencieusement
-    svgEl.innerHTML = '<div style="color:#000;font:12px sans-serif;padding:8px">' +
-      'QR err: ' + (e.message || e) + '</div>';
-    wrap.hidden = false;
+  // On régénère uniquement si l'URL a changé (perf) — sinon on garde
+  if (url !== lastQRUrl) {
+    try {
+      svgEl.innerHTML = QR.toSVG(url, 4);
+      lastQRUrl = url;
+      console.log('QR: URL =', url);
+    } catch (e) {
+      console.error('QR generation failed:', e);
+      wrap.hidden = true;
+      return;
+    }
   }
+
+  wrap.hidden = false;
 }
 
   function render(data){

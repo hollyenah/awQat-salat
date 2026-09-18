@@ -36,15 +36,16 @@ const DEFAULT_DATA = {
   showGregorian: true,
   showHijri: true,
   showLogo: false,
+  showQR: true,
   prayers: {
-    sahour:  '04:30',
-    fajr:    '05:30',
-    sunrise: '07:00',
-    zuhr:    '13:15',
-    asr:     '16:45',
-    maghrib: '19:20',
-    isha:    '20:45',
-    jumuah:  '13:30'
+    sahour:  '',
+    fajr:    '',
+    sunrise: '',
+    zuhr:    '12:30',
+    asr:     '15:30',
+    maghrib: '',
+    isha:    '',
+    jumuah:  '12:20'
   },
   footerMessage: 'MADE by HJ. QASSIM',
   showFooter: true
@@ -154,7 +155,7 @@ const server = http.createServer((req, res) => {
 
   if (url === '/api/data' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify(state));
+    res.end(JSON.stringify(currentData()));
     return;
   }
 
