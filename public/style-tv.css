@@ -37,7 +37,7 @@
 
 html, body{
   margin:0; padding:0; height:100%;
-  background: radial-gradient(ellipse at 50% 30%, #123A32 0%, var(--bg-deep) 60%);
+  background: radial-gradient(ellipse at 50% 30%, #2a8a77 0%, var(--bg-deep) 60%);
   color: var(--text-primary);
   font-family: var(--fs-primary-font);
   overflow: hidden;
@@ -257,39 +257,42 @@ h1{
 }
 
 .qr-toggle {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--divider);
-  background: var(--bg-panel);
+  width: 35px;
+  height: 35px;
+  border: none;
+  background: transparent;
   color: var(--gold-bright);
-  font-size: 20px;
+  font-size: 28px;              /* ← plus grand, c'est le caractère lui-même qui compte */
+  line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background .2s ease, border-color .2s ease;
-}
-.qr-toggle:active {
-  background: var(--gold);
-  color: #17240C;
+  padding: 0;                   /* ← supprime le padding par défaut du <button> */
+  transition: color .2s ease, text-shadow .2s ease, transform .2s ease;
 }
 .qr-toggle:hover {
-  border-color: var(--gold);
+  color: var(--gold);
+  text-shadow: 0 0 18px rgba(231, 199, 101, .9), 0 0 4px rgba(231, 199, 101, 1);
+}
+.qr-toggle:active {
+  color: var(--gold);
+  transform: scale(.92);
 }
 
 .qr-wrap {
-  padding: 8px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .55);
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
   line-height: 0;
 }
+
 .qr-wrap svg {
   display: block;
-  width: 170px;
-  height: 170px;
+  width: 150px;
+  height: 150px;
 }
+
 .qr-wrap[hidden] {
   display: none;
 }

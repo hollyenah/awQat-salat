@@ -182,21 +182,35 @@ window.QR = (function () {
     return M;
   }
 
-  function toSVG(text, scale) {
-    scale = scale || 4;
-    var M = encode(text);
-    var n = M.length, q = 4, total = n + 2 * q, px = total * scale;
-    var d = '';
-    for (var i = 0; i < n; i++) {
-      for (var j = 0; j < n; j++) {
-        if (M[i][j]) d += 'M' + (j + q) + ' ' + (i + q) + 'h1v1h-1z';
-      }
+function toSVG(text, scale, opts) {
+  scale = scale || 4;
+  opts  = opts  || {};
+  var dark  = opts.dark  || '#000000';
+  var light = opts.light || '#ffffff';
+
+  var M = encode(text);
+  var n = M.length, q = 4, total = n + 2 * q, px = total * scale;
+  var d = '';
+  for (var i = 0; i < n; i++) {
+    for (var j = 0; j < n; j++) {
+      if (M[i][j]) d += 'M' + (j + q) + ' ' + (i + q) + 'h1v1h-1z';
     }
-    return '<svg xmlns="http://www.w3.org/2000/svg" width="' + px + '" height="' + px +
-      '" viewBox="0 0 ' + total + ' ' + total + '" shape-rendering="crispEdges">' +
-      '<rect width="' + total + '" height="' + total + '" fill="#ffffff"/>' +
-      '<path d="' + d + '" fill="#000000"/></svg>';
   }
+
+  // Fond du QR : seulement si light n'est pas transparent
+  var bg = (light === 'transparent' || light === 'none')
+    ? ''
+    : '<rect width="' + total + '" height="' + total + '" fill="' + light + '"/>';
+
+  // Modules sombres : seulement si dark n'est pas transparent
+  var fg = (dark === 'transparent' || dark === 'none' || !d)
+    ? ''
+    : '<path d="' + d + '" fill="' + dark + '"/>';
+
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + px + '" height="' + px +
+    '" viewBox="0 0 ' + total + ' ' + total + '" shape-rendering="crispEdges">' +
+    bg + fg + '</svg>';
+}
 
   return { toSVG: toSVG, encode: encode };
 })();

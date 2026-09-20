@@ -18,7 +18,7 @@
   <!-- Bouton toggle QR + QR code en haut à droite -->
   <div class="qr-control" id="qrControl">
     <button class="qr-toggle" id="qrToggle" type="button" title="Afficher / masquer le QR code">
-      <span id="qrToggleIcon">▣</span>
+      <span id="qrToggleIcon">⦿</span>
     </button>
     <div class="qr-wrap" id="qrWrap" hidden>
       <div id="qrSvg"></div>
@@ -167,7 +167,12 @@ function updateDateDisplay(){
     try {
       var host = (ip && port) ? (ip + ':' + port) : window.location.host;
       var url = 'http://' + host + '/admin.html';
-      document.getElementById('qrSvg').innerHTML = QR.toSVG(url, 4);
+      document.getElementById('qrSvg').innerHTML = QR.toSVG(url, 4, {
+        dark:  '#2a8a77', 
+        light: 'transparent'
+        //dark:  '#0a1f1c',
+        //light: '#1b564a' 
+      });
       qrInitialized = true;
     } catch (e) {
       console.warn('QR generation failed', e);
@@ -178,7 +183,7 @@ function updateDateDisplay(){
   function setQRVisible(visible) {
     qrVisible = visible;
     document.getElementById('qrWrap').hidden = !visible;
-    document.getElementById('qrToggleIcon').textContent = visible ? '-' : '+';
+    document.getElementById('qrToggleIcon').textContent = visible ? '✦' : '✪';
   }
 
   function toggleQR() {
