@@ -37,6 +37,7 @@ const DEFAULT_DATA = {
   showHijri: true,
   showLogo: false,
   showQR: true,
+  showTahajud: false,
   prayers: {
     sahour:  '',
     fajr:    '',

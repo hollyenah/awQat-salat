@@ -104,6 +104,17 @@
     <label for="jumuah">Jum'ah</label>
     <input type="time" id="jumuah">
   </div>
+  <div class="field">
+    <label for="tahajud">Tahajud</label>
+    <input type="time" id="tahajud">
+  </div>
+</div>
+<div class="switch-row" style="margin-top:16px;">
+  <span>Afficher Tahajud à la place de Joum'ah</span>
+  <label class="switch">
+    <input type="checkbox" id="showTahajud">
+    <span class="slider"></span>
+  </label>
 </div>
   </section>
 
@@ -198,6 +209,8 @@ const els = {
   showHijri: document.getElementById('showHijri'),
   showLogo: document.getElementById('showLogo'),
   showQR: document.getElementById('showQR'),
+  tahajud: document.getElementById('tahajud'),
+  showTahajud: document.getElementById('showTahajud'),
 };
 
   const saveBtn = document.getElementById('saveBtn');
@@ -217,6 +230,8 @@ const els = {
     if (els.showFooter) els.showFooter.checked = !!data.showFooter;
     if (els.showLogo) els.showLogo.checked = !!data.showLogo;
     if (els.showQR) els.showQR.checked = data.showQR !== false;
+    if (els.tahajud) els.tahajud.value = p.tahajud || '';
+    if (els.showTahajud) els.showTahajud.checked = data.showTahajud === true;
   }
 
   function setStatus(text, kind){
@@ -242,10 +257,12 @@ const els = {
         maghrib: els.maghrib ? els.maghrib.value : '',
         isha:    els.isha    ? els.isha.value    : '',
         jumuah:  els.jumuah  ? els.jumuah.value  : '',
+        tahajud: els.tahajud ? els.tahajud.value : '',
       },
       footerMessage: els.footerMessage ? els.footerMessage.value : '',
       showFooter:    els.showFooter    ? els.showFooter.checked  : false,
       showQR: els.showQR ? els.showQR.checked : true,
+      showTahajud: els.showTahajud ? els.showTahajud.checked : false,
     };
   }
 

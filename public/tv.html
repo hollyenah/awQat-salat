@@ -178,7 +178,7 @@ function updateDateDisplay(){
   function setQRVisible(visible) {
     qrVisible = visible;
     document.getElementById('qrWrap').hidden = !visible;
-    document.getElementById('qrToggleIcon').textContent = visible ? '▣' : '▢';
+    document.getElementById('qrToggleIcon').textContent = visible ? '-' : '+';
   }
 
   function toggleQR() {
@@ -205,9 +205,22 @@ function updateDateDisplay(){
     showHijri = data.showHijri !== false;
     updateDateDisplay();
     currentPrayers = data.prayers || {};
-    Object.keys(cardEls).forEach((key) => {
-      cardEls[key].querySelector('.time').textContent = currentPrayers[key] || '--:--';
+
+    // 7 cartes fixes (dans l'ordre de la grille)
+    ['sahour','fajr','sunrise','zuhr','asr','maghrib','isha'].forEach((key) => {
+      if (cardEls[key]) {
+        cardEls[key].querySelector('.time').textContent = currentPrayers[key] || '--:--';
+      }
     });
+
+    // 8ᵉ case : Jumu'ah OU Tahajud selon le toggle
+    const useTahajud = data.showTahajud === true;
+    const eighthKey   = useTahajud ? 'tahajud' : 'jumuah';
+    const eighthLabel = useTahajud ? 'TAHAJUD'  : "JOUM'AH";
+    if (cardEls.jumuah) {
+      cardEls.jumuah.querySelector('.label').textContent = eighthLabel;
+      cardEls.jumuah.querySelector('.time').textContent  = currentPrayers[eighthKey] || '--:--';
+    }
 
     footerMessageEl.textContent = data.footerMessage || '';
     footerWrap.hidden = !data.showFooter;
