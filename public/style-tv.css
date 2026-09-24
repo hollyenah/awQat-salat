@@ -33,16 +33,20 @@
   --fs-arial-black: 'arialBlack', sans-serif;
 }
 
-*{ box-sizing: border-box; }
+*{ box-sizing: border-box;
+}
 
 html, body{
-  margin:0; padding:0; height:100%;
+  margin:0;
+  padding:0;
+  height:100%;
   background: radial-gradient(ellipse at 50% 30%, #2a8a77 0%, var(--bg-deep) 60%);
   color: var(--text-primary);
   font-family: var(--fs-primary-font);
   overflow: hidden;
   cursor: none;
-  -webkit-user-select: none; user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -54,7 +58,7 @@ html, body{
   left: 0;
   width: 1920px;
   height: 1080px;
-  transform-origin: top left;   /* ← critique : on scale depuis le coin haut-gauche */
+  transform-origin: top left;
   padding: 40px 60px;
   display: flex;
   flex-direction: column;
@@ -64,16 +68,21 @@ html, body{
 }
 
 .status-dot{
-  position: fixed; top:16px; right:16px;
-  width:9px; height:9px; border-radius:50%;
-  background:#5a6b66; opacity:.55;
+  position: fixed;
+  top:16px;
+  right:16px;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#5a6b66;
+  opacity:.55;
   transition: background .5s ease;
   z-index: 10;
 }
 
 /* LOGO */
 .logo{
-  position: absolute;         /* dans la scène, pas dans l'écran */
+  position: absolute;
   top: 30px;
   right: 40px;
   max-height: 120px;
@@ -84,7 +93,9 @@ html, body{
 }
 
 /* HEADER */
-.header{ text-align: center; width: 100%; }
+.header{ text-align: center;
+  width: 100%;
+}
 
 h1{
   margin:0;
@@ -123,7 +134,10 @@ h1{
   line-height: 1;
 }
 
-.date-sep{ color: var(--gold); opacity:.7; font-size: 60px; }
+.date-sep{ color: var(--gold);
+  opacity:.7;
+  font-size: 60px;
+}
 
 #displayDate{
   font-size: 60px;
@@ -142,15 +156,19 @@ h1{
 .divider{
   width: 700px;
   max-width: 80%;
-  display:flex; align-items:center;
+  display:flex;
+  align-items:center;
   margin: 30px 0;
 }
 .divider .line{
-  flex:1; height:1px;
+  flex:1;
+  height:1px;
   background: linear-gradient(90deg, transparent, var(--divider) 20%, var(--divider) 80%, transparent);
 }
 .divider .diamond{
-  width:14px; height:14px; margin:0 20px;
+  width:14px;
+  height:14px;
+  margin:0 20px;
   background: var(--gold);
   transform: rotate(45deg);
   border-radius:2px;
@@ -183,7 +201,7 @@ h1{
 }
 
 .card .label{
-  font-size: 42px;              /* était 60px */
+  font-size: 42px;
   font-family: var(--fs-arabic-font);
   font-weight:600;
   letter-spacing: 0.06em;
@@ -195,7 +213,7 @@ h1{
 }
 
 .card .time{
-  font-size: 84px;              /* était 110px */
+  font-size: 84px;
   font-family: var(--fs-arial-black);
   font-weight:800;
   font-variant-numeric: tabular-nums;
@@ -209,15 +227,21 @@ h1{
   box-shadow: 0 0 0 1px var(--gold), 0 0 30px -6px var(--gold-bright);
   animation: pulseGlow 2.6s ease-in-out infinite;
 }
-.card.next .label{ color: var(--gold-bright); }
-.card.next .time{ color: var(--gold-bright); }
+.card.next .label{ color: var(--gold-bright);
+}
+.card.next .time{ color: var(--gold-bright);
+}
 
 @keyframes pulseGlow{
-  0%, 100% { box-shadow: 0 0 0 1px var(--gold), 0 0 24px -8px var(--gold-bright); }
-  50%      { box-shadow: 0 0 0 1px var(--gold), 0 0 40px -6px var(--gold-bright); }
+  0%, 100% { box-shadow: 0 0 0 1px var(--gold), 0 0 24px -8px var(--gold-bright);
+  }
+  50%      { box-shadow: 0 0 0 1px var(--gold), 0 0 40px -6px var(--gold-bright);
+  }
 }
+
 @media (prefers-reduced-motion: reduce){
-  .card.next{ animation:none; }
+  .card.next{ animation:none;
+  }
 }
 
 /* FOOTER */
@@ -241,10 +265,10 @@ h1{
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
-.footer[hidden]{ display:none; }
+.footer[hidden]{ display:none;
+}
 
 /* QR code d'administration */
-/* Contrôle QR en haut à droite */
 .qr-control {
   position: absolute;
   top: 30px;
@@ -262,13 +286,13 @@ h1{
   border: none;
   background: transparent;
   color: var(--gold-bright);
-  font-size: 28px;              /* ← plus grand, c'est le caractère lui-même qui compte */
+  font-size: 28px;
   line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;                   /* ← supprime le padding par défaut du <button> */
+  padding: 0;
   transition: color .2s ease, text-shadow .2s ease, transform .2s ease;
 }
 .qr-toggle:hover {

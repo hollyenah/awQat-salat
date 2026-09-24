@@ -21,13 +21,12 @@
     </p><h1>Administration</h1>
 
 
-  <p class="subtitle">Les modifications s'appliquent sur l'écran dès l'enregistrement.</p>
+  <p class="subtitle">Les modifications s'appliquent sur l'écran après l'enregistrement.</p>
 
   <section>
     <h2>Masjid</h2>
     <label for="mosqueName">Nom de la Masjid</label>
 <textarea id="mosqueName" placeholder="MASJID" rows="2"></textarea>
-<p class="hint">Appuyez sur Entrée pour ajouter un retour à la ligne (ex. nom en français / nom en arabe).</p>
 
     <label>Date affichée</label>
     <p class="hint">Calculée automatiquement. Si la date hijri ne correspond pas à la vue de la lune, ajustez ici :</p>
@@ -273,9 +272,7 @@ const els = {
     .then(fill)
     .catch(() => setStatus("Impossible de charger les données. Vérifiez que le téléphone est bien sur le même Wi-Fi.", 'err'));
 
-  /*
-     ENREGISTREMENT
-     */
+  /* ENREGISTREMENT */
 
   if (saveBtn) saveBtn.addEventListener('click', () => {
     const payload = buildPayload();
@@ -299,15 +296,7 @@ const els = {
       });
   });
 
-  /*
-     CAPTURE RÉELLE DE L'ÉCRAN TV
-    
-     On charge /tv.html dans un iframe caché 1920×1080, on lui
-     pousse les valeurs actuelles du formulaire, on attend les
-     polices, puis on sérialise #stage dans un SVG <foreignObject>
-     (avec les @font-face inlinées en base64 et le logo en
-     data:URI). Enfin on dessine ce SVG sur un canvas 1920×1080.
-     */
+  /* CAPTURE RÉELLE DE L'ÉCRAN TV */
 
   const TV_W = 1920;
   const TV_H = 1080;
@@ -372,8 +361,7 @@ const els = {
     const win = iframe.contentWindow;
     const doc = win.document;
 
-    // 2. On laisse passer la micro-tâche SSE initiale, puis on pousse
-    //    les valeurs actuelles du formulaire admin.
+    // 2. On laisse passer la micro-tâche SSE initiale, puis on pousse les valeurs actuelles du formulaire admin.
     await new Promise((r) => setTimeout(r, 150));
     const payload = buildPayload();
     try {
@@ -427,7 +415,7 @@ const els = {
     var qrControl = stageEl.querySelector('#qrControl');
     if (qrControl) qrControl.style.display = 'none';
 
-    // 6. Sérialisation XHTML (indispensable : <img … /> auto-fermé)
+    // 6. Sérialisation XHTML
     const stageXML = new XMLSerializer().serializeToString(stageEl);
 
     // 7. Construction du SVG <foreignObject>
@@ -479,10 +467,7 @@ const els = {
     return canvas;
   }
 
-  /*
-     BOUTON CAPTURE
-     */
-
+  /* BOUTON CAPTURE */
   const exportBtn = document.getElementById('exportBtn');
   if (exportBtn) exportBtn.addEventListener('click', async () => {
     const prevLabel = exportBtn.textContent;
@@ -531,6 +516,5 @@ const els = {
     });
     
 </script>
-
 </body>
 </html>
