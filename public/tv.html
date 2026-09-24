@@ -9,7 +9,7 @@
 <script src="qr.js"></script>
 </head>
 <body>
-
+  <audio id="keepAliveAudio" src="silence.mp3" loop preload="auto" aria-hidden="true"></audio>
   <div class="status-dot" id="statusDot" aria-hidden="true"></div>
 
 <div id="stage">
@@ -320,6 +320,230 @@ function fitStage(){
       if (el && d.version) el.textContent = '· v' + d.version;
     })
     .catch(() => {});
+
+    // =====================================================================
+// Maintien d'écran : audio quasi-silencieux + refresh préventif
+// =====================================================================
+(function keepAliveAudio() {
+  function init() {
+    var a = document.getElementById('keepAliveAudio');
+    if (!a) {
+      console.warn('[keepAliveAudio] élément introuvable');
+      return;
+    }
+
+    // Volume très bas mais PAS 0 (0 = pas de focus audio sur certains systèmes)
+    a.volume = 0.01;
+
+    function tryPlay() {
+      if (!a.paused) return;
+      var p = a.play();
+      if (p && p.catch) {
+        p.catch(function (err) {
+          console.warn('[keepAliveAudio] play refusé :', err && err.name);
+          setTimeout(tryPlay, 3000);
+        });
+      } else {
+        console.log('[keepAliveAudio] lecture démarrée');
+      }
+    }
+
+    if (a.readyState >= 2) {
+      tryPlay();
+    } else {
+      a.addEventListener('loadeddata', tryPlay, { once: true });
+      a.addEventListener('canplay',    tryPlay, { once: true });
+    }
+
+    // Filets de sécurité
+    [500, 1500, 3000, 6000].forEach(function (t) { setTimeout(tryPlay, t); });
+
+    // Relance si mis en pause
+    a.addEventListener('pause', function () { setTimeout(tryPlay, 500); });
+    a.addEventListener('ended', tryPlay);
+
+    // Relance au retour de visibilité
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) tryPlay();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+
+// ---------------------------------------------------------------------
+// Refresh préventif toutes les 3 heures
+// Remet à zéro tous les compteurs d'inactivité (navigateur + médias)
+// ---------------------------------------------------------------------
+(function autoRefresh() {
+  var DELAI = 3 * 60 * 60 * 1000;   // 3 heures en millisecondes
+
+  setTimeout(function () {
+    console.log('[autoRefresh] rechargement de la page');
+    location.reload();
+  }, DELAI);
+})();
+
+// =====================================================================
+// KEEP-ALIVE MULTI-COUCHES
+// Toutes les techniques JS connues pour maintenir l'activité système
+// =====================================================================
+(function keepAliveMultiLayer() {
+
+  // ---------------------------------------------------------------
+  // 1) Canvas animation continue (rAF)
+  //    Garde le CPU/GPU actif → le système voit du travail en cours
+  // ---------------------------------------------------------------
+  (function canvasActivity() {
+    var c = document.createElement('canvas');
+    c.width = 1; c.height = 1;
+    c.style.cssText = 'position:fixed;bottom:0;left:0;width:1px;height:1px;opacity:0.01;pointer-events:none;z-index:-1;';
+    document.body.appendChild(c);
+    var ctx = c.getContext('2d');
+    var t = 0;
+
+    function loop() {
+      // Dessine un pixel qui change de couleur → force un repaint
+      t++;
+      ctx.fillStyle = (t % 2) ? '#000001' : '#000002';
+      ctx.fillRect(0, 0, 1, 1);
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  })();
+
+  // ---------------------------------------------------------------
+  // 2) Oscillateur WebAudio silencieux
+  //    Différent de <audio> : reste dans le contexte audio natif
+  // ---------------------------------------------------------------
+  (function webAudioOscillator() {
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      var ac = new AC();
+      var osc = ac.createOscillator();
+      var gain = ac.createGain();
+      gain.gain.value = 0.0001;   // quasi inaudible
+      osc.frequency.value = 20;   // 20 Hz = infrasons, inaudible
+      osc.connect(gain);
+      gain.connect(ac.destination);
+      osc.start();
+
+      // Certains navigateurs suspendent l'AudioContext après inactivité
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden && ac.state === 'suspended') ac.resume();
+      });
+      setInterval(function () {
+        if (ac.state === 'suspended') ac.resume();
+      }, 30000);
+    } catch (e) {
+      console.warn('[webAudio] non supporté :', e);
+    }
+  })();
+
+  // ---------------------------------------------------------------
+  // 3) Événements clavier/pointeur synthétiques (toutes les 60 s)
+  //    Ne trompent PAS Android, mais peuvent tromper certains
+  //    navigateurs qui comptent l'activité DOM
+  // ---------------------------------------------------------------
+  (function syntheticEvents() {
+    function dispatch() {
+      var target = document.body;
+      try {
+        ['keydown','keypress','keyup'].forEach(function (type) {
+          target.dispatchEvent(new KeyboardEvent(type, {
+            key: 'Shift', code: 'ShiftLeft', keyCode: 16,
+            bubbles: true, cancelable: true
+          }));
+        });
+        target.dispatchEvent(new MouseEvent('mousemove', {
+          bubbles: true, cancelable: true, clientX: 1, clientY: 1
+        }));
+        target.dispatchEvent(new PointerEvent('pointermove', {
+          bubbles: true, cancelable: true, clientX: 1, clientY: 1
+        }));
+      } catch (e) { /* ignore */ }
+    }
+    dispatch();
+    setInterval(dispatch, 60000);
+  })();
+
+  // ---------------------------------------------------------------
+  // 4) Cycle de focus sur un élément invisible
+  //    Un changement de focus est parfois compté comme activité
+  // ---------------------------------------------------------------
+  (function focusCycle() {
+    var el = document.createElement('input');
+    el.type = 'text';
+    el.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;';
+    el.setAttribute('aria-hidden', 'true');
+    el.setAttribute('tabindex', '-1');
+    document.body.appendChild(el);
+
+    setInterval(function () {
+      try {
+        el.focus({ preventScroll: true });
+        setTimeout(function () { el.blur(); }, 100);
+      } catch (e) { /* ignore */ }
+    }, 120000);   // toutes les 2 min
+  })();
+
+  // ---------------------------------------------------------------
+  // 5) Requête réseau périodique vers soi-même
+  //    Maintient l'activité réseau + SSE vivant
+  // ---------------------------------------------------------------
+  (function networkPing() {
+    setInterval(function () {
+      fetch('/api/version', { cache: 'no-store' }).catch(function(){});
+    }, 60000);
+  })();
+
+  // ---------------------------------------------------------------
+  // 6) Animation CSS infinie (compositor activity)
+  // ---------------------------------------------------------------
+  (function cssAnimation() {
+    var s = document.createElement('style');
+    s.textContent = '@keyframes __ka{0%{opacity:0.99}100%{opacity:1}}' +
+                    '.__ka-el{animation:__ka 60s linear infinite;}';
+    document.head.appendChild(s);
+    var d = document.createElement('div');
+    d.className = '__ka-el';
+    d.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;';
+    document.body.appendChild(d);
+  })();
+
+  // ---------------------------------------------------------------
+  // 7) Toggle plein-écran périodique (demande d'activité utilisateur)
+  //    ⚠ À utiliser avec précaution : peut fermer le plein-écran
+  //    Désactivé par défaut. Décommente si tu veux tester.
+  // ---------------------------------------------------------------
+  /*
+  (function fullscreenPulse() {
+    setInterval(function () {
+      try {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(function(){});
+        }
+      } catch (e) {}
+    }, 30 * 60 * 1000);   // toutes les 30 min
+  })();
+  */
+
+  // ---------------------------------------------------------------
+  // 8) Debug : état toutes les heures
+  // ---------------------------------------------------------------
+  setInterval(function () {
+    var a = document.getElementById('keepAliveAudio');
+    console.log('[keepAlive] alive — audio.paused=' + (a ? a.paused : 'n/a') +
+                ' visibility=' + document.visibilityState +
+                ' hidden=' + document.hidden);
+  }, 60 * 60 * 1000);
+
+})();
 
 </script>
 </body>
