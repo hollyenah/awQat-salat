@@ -6,13 +6,13 @@
   "showLogo": false,
   "showTahajud": false,
   "prayers": {
-    "sahour": "04:26",
-    "fajr": "04:55",
-    "sunrise": "05:51",
+    "sahour": "04:21",
+    "fajr": "16:50",
+    "sunrise": "05:37",
     "zuhr": "12:30",
     "asr": "15:45",
-    "maghrib": "17:51",
-    "isha": "19:10",
+    "maghrib": "17:52",
+    "isha": "19:15",
     "jumuah": "12:20",
     "tahajud": "02:00"
   },
