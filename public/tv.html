@@ -9,62 +9,59 @@
 <script src="qr.js"></script>
 </head>
 <body>
-  <audio id="keepAliveAudio" src="silence.mp3" loop preload="auto" aria-hidden="true"></audio>
+
   <div class="status-dot" id="statusDot" aria-hidden="true"></div>
 
-<div id="stage">
-  <img id="logo" class="logo" src="/logo.png" alt="" onerror="this.style.display='none'">
+  <div id="stage">
+    <img id="logo" class="logo" src="/logo.png" alt="" onerror="this.style.display='none'">
 
-  <!-- Bouton toggle QR + QR code en haut à droite -->
-  <div class="qr-control" id="qrControl">
-    <button class="qr-toggle" id="qrToggle" type="button" title="Afficher / masquer le QR code">
-      <span id="qrToggleIcon">⦿</span>
-    </button>
-    <div class="qr-wrap" id="qrWrap" hidden>
-      <div id="qrSvg"></div>
+    <!-- Bouton toggle QR + QR code -->
+    <div class="qr-control" id="qrControl">
+      <button class="qr-toggle" id="qrToggle" type="button" title="Afficher / masquer le QR code">
+        <span id="qrToggleIcon">⦿</span>
+      </button>
+      <div class="qr-wrap" id="qrWrap" hidden>
+        <div id="qrSvg"></div>
+      </div>
     </div>
-  </div>
 
+    <header class="header">
+      <h1 id="mosqueName">MASJID</h1>
+      <div class="meta">
+        <span id="displayDate" style="color:#feebb2;"></span>
+        <span id="clock">--:--:--</span>
+      </div>
+    </header>
 
-  <header class="header">
-    <h1 id="mosqueName">MASJID</h1>
-    <div class="meta">
-      <span id="displayDate" style="color:#feebb2;"></span>
-      <span id="clock">--:--:--</span>
+    <div class="divider" aria-hidden="true">
+      <span class="line"></span><span class="diamond"></span><span class="line"></span>
     </div>
-  </header>
 
-  <div class="divider" aria-hidden="true">
-    <span class="line"></span><span class="diamond"></span><span class="line"></span>
-  </div>
+    <main class="grid" id="grid">
+      <div class="card" data-key="sahour"><span class="label">SAHOUR</span><span class="time">--:--</span></div>
+      <div class="card" data-key="fajr"><span class="label">FAJR</span><span class="time">--:--</span></div>
+      <div class="card" data-key="sunrise"><span class="label">LEVER DU SOLEIL</span><span class="time">--:--</span></div>
+      <div class="card" data-key="zuhr"><span class="label">ZOUHR</span><span class="time">--:--</span></div>
+      <div class="card" data-key="asr"><span class="label">ASSR</span><span class="time">--:--</span></div>
+      <div class="card" data-key="maghrib"><span class="label">MAGHRIB</span><span class="time">--:--</span></div>
+      <div class="card" data-key="isha"><span class="label">ISHA</span><span class="time">--:--</span></div>
+      <div class="card" data-key="jumuah"><span class="label">JOUM'AH</span><span class="time">--:--</span></div>
+    </main>
 
-  <main class="grid" id="grid">
-    <div class="card" data-key="sahour"><span class="label">SAHOUR</span><span class="time">--:--</span></div>
-    <div class="card" data-key="fajr"><span class="label">FAJR</span><span class="time">--:--</span></div>
-    <div class="card" data-key="sunrise"><span class="label">LEVER DU SOLEIL</span><span class="time">--:--</span></div>
-    <div class="card" data-key="zuhr"><span class="label">ZOUHR</span><span class="time">--:--</span></div>
-    <div class="card" data-key="asr"><span class="label">ASSR</span><span class="time">--:--</span></div>
-    <div class="card" data-key="maghrib"><span class="label">MAGHRIB</span><span class="time">--:--</span></div>
-    <div class="card" data-key="isha"><span class="label">ISHA</span><span class="time">--:--</span></div>
-    <div class="card" data-key="jumuah"><span class="label">JOUM'AH</span><span class="time">--:--</span></div>
-</main>
+    <footer class="footer" id="footerWrap" hidden>
+      <p id="footerMessage"></p>
+    </footer>
 
-  <footer class="footer" id="footerWrap" hidden>
-    <p id="footerMessage"></p>
-  </footer>
     <p class="watermark">&copy;2026 awQat-salat.app - Qassim.<span id="appVersion">version?</span></p>
-
-</div>
-
-<!--script>window.__DEBUG__ = true;</script-->
+  </div>
 
 <script>
-  const mosqueNameEl = document.getElementById('mosqueName');
-  const displayDateEl = document.getElementById('displayDate');
-  const clockEl = document.getElementById('clock');
-  const footerWrap = document.getElementById('footerWrap');
+  const mosqueNameEl   = document.getElementById('mosqueName');
+  const displayDateEl  = document.getElementById('displayDate');
+  const clockEl        = document.getElementById('clock');
+  const footerWrap     = document.getElementById('footerWrap');
   const footerMessageEl = document.getElementById('footerMessage');
-  const statusDot = document.getElementById('statusDot');
+  const statusDot      = document.getElementById('statusDot');
 
   const cardEls = {};
   document.querySelectorAll('.card').forEach((c) => { cardEls[c.dataset.key] = c; });
@@ -72,54 +69,50 @@
   const DAILY_ORDER = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
   let currentPrayers = {};
 
-  let hijriOffset = 0;
+  let hijriOffset   = 0;
   let showGregorian = true;
-  let showHijri = true;
+  let showHijri     = true;
 
-const HIJRI_MONTHS = [
-  "Mouharram", "Safar", "Rabioul-Awwal", "Rabioul-Akhir",
-  "Joumadal-Oula", "Joumadal-Akhira", "Rajab", "Cha'bân",
-  "Ramadan", "Chawwal", "Zou al-Qi'da", "Zoul-Hijja"
-];
+  const HIJRI_MONTHS = [
+    "Mouharram", "Safar", "Rabioul-Awwal", "Rabioul-Akhir",
+    "Joumadal-Oula", "Joumadal-Akhira", "Rajab", "Cha'bân",
+    "Ramadan", "Chawwal", "Zou al-Qi'da", "Zoul-Hijja"
+  ];
 
+  function gregorianToHijri(gy, gm, gd, offset){
+    let jd = Math.floor((1461 * (gy + 4800 + Math.floor((gm - 14) / 12))) / 4) +
+             Math.floor((367 * (gm - 2 - 12 * Math.floor((gm - 14) / 12))) / 12) -
+             Math.floor((3 * Math.floor((gy + 4900 + Math.floor((gm - 14) / 12)) / 100)) / 4) +
+             gd - 32075;
+    jd += (offset || 0);
+    let l = jd - 1948440 + 10632;
+    const n = Math.floor((l - 1) / 10631);
+    l = l - 10631 * n + 354;
+    const j = Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719) +
+              Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
+    l = l - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) -
+        Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+    const hm = Math.floor((24 * l) / 709);
+    const hd = l - Math.floor((709 * hm) / 24);
+    const hy = 30 * n + j - 30;
+    return { year: hy, month: hm, day: hd };
+  }
 
-// Algo calcule mois Greg > Hijri
-function gregorianToHijri(gy, gm, gd, offset){
-  let jd = Math.floor((1461 * (gy + 4800 + Math.floor((gm - 14) / 12))) / 4) +
-           Math.floor((367 * (gm - 2 - 12 * Math.floor((gm - 14) / 12))) / 12) -
-           Math.floor((3 * Math.floor((gy + 4900 + Math.floor((gm - 14) / 12)) / 100)) / 4) +
-           gd - 32075;
-  jd += (offset || 0);
-  let l = jd - 1948440 + 10632;
-  const n = Math.floor((l - 1) / 10631);
-  l = l - 10631 * n + 354;
-  const j = Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719) +
-            Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
-  l = l - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) -
-      Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
-  const hm = Math.floor((24 * l) / 709);
-  const hd = l - Math.floor((709 * hm) / 24);
-  const hy = 30 * n + j - 30;
-  return { year: hy, month: hm, day: hd };
-}
+  function capitalize(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 
-function capitalize(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
-
-function updateDateDisplay(){
-  const now = new Date();
-  const gregorian = capitalize(now.toLocaleDateString('fr-FR', {
-    weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric'
-  }));
-  const h = gregorianToHijri(now.getFullYear(), now.getMonth() + 1, now.getDate(), hijriOffset);
-  const hijri = `${h.day} ${HIJRI_MONTHS[h.month - 1]} ${h.year}`;
-  const parts = [];
-  if (showGregorian) parts.push(gregorian);
-  if (showHijri) parts.push(hijri);
-  displayDateEl.innerHTML = parts.map((p) => `<span>${p}</span>`).join('<span class="date-sep"> ✼ </span>');
-  displayDateEl.style.display = parts.length ? '' : 'none';
-  const sepEl = document.getElementById('dateSep');
-  if (sepEl) sepEl.style.display = parts.length ? '' : 'none';
-}
+  function updateDateDisplay(){
+    const now = new Date();
+    const gregorian = capitalize(now.toLocaleDateString('fr-FR', {
+      weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric'
+    }));
+    const h = gregorianToHijri(now.getFullYear(), now.getMonth() + 1, now.getDate(), hijriOffset);
+    const hijri = `${h.day} ${HIJRI_MONTHS[h.month - 1]} ${h.year}`;
+    const parts = [];
+    if (showGregorian) parts.push(gregorian);
+    if (showHijri) parts.push(hijri);
+    displayDateEl.innerHTML = parts.map((p) => `<span>${p}</span>`).join('<span class="date-sep"> ✼ </span>');
+    displayDateEl.style.display = parts.length ? '' : 'none';
+  }
 
   function setStatus(ok){
     statusDot.style.background = ok ? '#4caf6b' : '#c0524a';
@@ -148,15 +141,12 @@ function updateDateDisplay(){
       if (diff >= 0 && diff < best) { best = diff; nextKey = key; }
     });
 
-    // Après Isha : Fajr loop
     if (nextKey === null) nextKey = 'fajr';
 
     DAILY_ORDER.forEach((key) => {
       cardEls[key].classList.toggle('next', key === nextKey);
     });
   }
-
-  var lastQRUrl = '';
 
   // QR code
   var qrInitialized = false;
@@ -168,10 +158,8 @@ function updateDateDisplay(){
       var host = (ip && port) ? (ip + ':' + port) : window.location.host;
       var url = 'http://' + host + '/admin.html';
       document.getElementById('qrSvg').innerHTML = QR.toSVG(url, 4, {
-        dark:  '#2a8a77', 
+        dark:  '#2a8a77',
         light: 'transparent'
-        //dark:  '#0a1f1c',
-        //light: '#1b564a' 
       });
       qrInitialized = true;
     } catch (e) {
@@ -189,36 +177,32 @@ function updateDateDisplay(){
   function toggleQR() {
     var newState = !qrVisible;
     setQRVisible(newState);
-
-    // Sauvegarde côté serveur (comme le toggle admin)
     fetch('/api/data', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ showQR: newState })
-    }).catch(function () { /* ignore */ });
+    }).catch(function () {});
   }
 
   document.getElementById('qrToggle').addEventListener('click', toggleQR);
 
-
+  // Rendu principal
   function render(data){
     if (!data) return;
     mosqueNameEl.textContent = data.mosqueName || '';
     document.getElementById('logo').style.display = data.showLogo ? '' : 'none';
-    hijriOffset = Number.isFinite(data.hijriOffset) ? data.hijriOffset : 0;
+    hijriOffset   = Number.isFinite(data.hijriOffset) ? data.hijriOffset : 0;
     showGregorian = data.showGregorian !== false;
-    showHijri = data.showHijri !== false;
+    showHijri     = data.showHijri !== false;
     updateDateDisplay();
     currentPrayers = data.prayers || {};
 
-    // 7 cartes fixes (dans l'ordre de la grille)
     ['sahour','fajr','sunrise','zuhr','asr','maghrib','isha'].forEach((key) => {
       if (cardEls[key]) {
         cardEls[key].querySelector('.time').textContent = currentPrayers[key] || '--:--';
       }
     });
 
-    // 8ᵉ case : Jumu'ah OU Tahajud selon le toggle
     const useTahajud = data.showTahajud === true;
     const eighthKey   = useTahajud ? 'tahajud' : 'jumuah';
     const eighthLabel = useTahajud ? 'TAHAJUD'  : "JOUM'AH";
@@ -231,88 +215,79 @@ function updateDateDisplay(){
     footerWrap.hidden = !data.showFooter;
 
     updateHighlight();
-    // QR code
     renderQR(data._localIP, data._port);
     setQRVisible(data.showQR !== false);
     fitStage();
-      
   }
 
   function tickClock(){
     clockEl.textContent = new Date().toLocaleTimeString('fr-FR', {
-      hour: '2-digit', minute: '2-digit' /*, second: '2-digit'*/
+      hour: '2-digit', minute: '2-digit'
     });
-
     updateDateDisplay();
     updateHighlight();
   }
 
-  // Chargement initial
   fetch('/api/data').then((r) => r.json()).then(render).catch(() => {});
 
-  // Mises à jour instantanées depuis l'administration
   const es = new EventSource('/api/events');
-  es.onopen = () => setStatus(true);
+  es.onopen  = () => setStatus(true);
   es.onerror = () => setStatus(false);
   es.onmessage = (e) => {
-    try { render(JSON.parse(e.data)); setStatus(true); } catch (err) { /* ignore */ }
+    try { render(JSON.parse(e.data)); setStatus(true); } catch (err) {}
   };
 
   tickClock();
   setInterval(tickClock, 1000);
 
-const STAGE_W = 1920;
-const STAGE_H = 1080;
-const stage = document.getElementById('stage');
+  // Mise à l'échelle
+  const STAGE_W = 1920;
+  const STAGE_H = 1080;
+  const stage = document.getElementById('stage');
 
-function fitStage(){
+  function fitStage(){
+    const candidatesW = [
+      window.innerWidth,
+      document.documentElement.clientWidth,
+      window.screen ? window.screen.width      : 0,
+      window.screen ? window.screen.availWidth : 0,
+      (window.visualViewport ? window.visualViewport.width : 0)
+    ].filter(function(v){ return v > 200 && v < 8000; });
 
-  // Récupère toutes les tailles candidates et filtre les valeurs aberrantes
-  const candidatesW = [
-    window.innerWidth,
-    document.documentElement.clientWidth,
-    window.screen ? window.screen.width      : 0,
-    window.screen ? window.screen.availWidth : 0,
-    (window.visualViewport ? window.visualViewport.width : 0)
-  ].filter(function(v){ return v > 200 && v < 8000; });
+    const candidatesH = [
+      window.innerHeight,
+      document.documentElement.clientHeight,
+      window.screen ? window.screen.height      : 0,
+      window.screen ? window.screen.availHeight : 0,
+      (window.visualViewport ? window.visualViewport.height : 0)
+    ].filter(function(v){ return v > 200 && v < 8000; });
 
-  const candidatesH = [
-    window.innerHeight,
-    document.documentElement.clientHeight,
-    window.screen ? window.screen.height      : 0,
-    window.screen ? window.screen.availHeight : 0,
-    (window.visualViewport ? window.visualViewport.height : 0)
-  ].filter(function(v){ return v > 200 && v < 8000; });
+    const vw = Math.min.apply(null, candidatesW);
+    const vh = Math.min.apply(null, candidatesH);
+    const scale = Math.min(vw / STAGE_W, vh / STAGE_H);
 
-  // PLUS PETITE > élimine les valeurs TV aberrantes
-  const vw = Math.min.apply(null, candidatesW);
-  const vh = Math.min.apply(null, candidatesH);
+    stage.style.transform = 'scale(' + scale + ')';
 
-  const scale = Math.min(vw / STAGE_W, vh / STAGE_H);
-
-  stage.style.transform = 'scale(' + scale + ')';
-
-  // Debug visible sur la TV
-  if (window.__DEBUG__) {
-    let dbg = document.getElementById('__dbg');
-    if (!dbg) {
-      dbg = document.createElement('div');
-      dbg.id = '__dbg';
-      dbg.style.cssText = 'position:fixed;bottom:0;left:0;background:#000;color:#0f0;' +
-        'font:12px monospace;padding:6px 10px;z-index:9999;white-space:pre;opacity:.85';
-      document.body.appendChild(dbg);
+    if (window.__DEBUG__) {
+      let dbg = document.getElementById('__dbg');
+      if (!dbg) {
+        dbg = document.createElement('div');
+        dbg.id = '__dbg';
+        dbg.style.cssText = 'position:fixed;bottom:0;left:0;background:#000;color:#0f0;' +
+          'font:12px monospace;padding:6px 10px;z-index:9999;white-space:pre;opacity:.85';
+        document.body.appendChild(dbg);
+      }
+      dbg.textContent =
+        'innerW=' + window.innerWidth +
+        ' innerH=' + window.innerHeight + '\n' +
+        'screenW=' + (window.screen ? window.screen.width : '?') +
+        ' screenH=' + (window.screen ? window.screen.height : '?') + '\n' +
+        'dpr=' + (window.devicePixelRatio || 1) +
+        '  ->  vw=' + vw + ' vh=' + vh + ' scale=' + scale.toFixed(3);
     }
-    dbg.textContent =
-      'innerW=' + window.innerWidth +
-      ' innerH=' + window.innerHeight + '\n' +
-      'screenW=' + (window.screen ? window.screen.width : '?') +
-      ' screenH=' + (window.screen ? window.screen.height : '?') + '\n' +
-      'dpr=' + (window.devicePixelRatio || 1) +
-      '  ->  vw=' + vw + ' vh=' + vh + ' scale=' + scale.toFixed(3);
   }
-}
 
-  // Version de l'app, récupérée une seule fois au démarrage
+  // Version
   fetch('/api/version')
     .then((r) => r.json())
     .then((d) => {
@@ -320,231 +295,6 @@ function fitStage(){
       if (el && d.version) el.textContent = '· v' + d.version;
     })
     .catch(() => {});
-
-    // =====================================================================
-// Maintien d'écran : audio quasi-silencieux + refresh préventif
-// =====================================================================
-(function keepAliveAudio() {
-  function init() {
-    var a = document.getElementById('keepAliveAudio');
-    if (!a) {
-      console.warn('[keepAliveAudio] élément introuvable');
-      return;
-    }
-
-    // Volume très bas mais PAS 0 (0 = pas de focus audio sur certains systèmes)
-    a.volume = 0.01;
-
-    function tryPlay() {
-      if (!a.paused) return;
-      var p = a.play();
-      if (p && p.catch) {
-        p.catch(function (err) {
-          console.warn('[keepAliveAudio] play refusé :', err && err.name);
-          setTimeout(tryPlay, 3000);
-        });
-      } else {
-        console.log('[keepAliveAudio] lecture démarrée');
-      }
-    }
-
-    if (a.readyState >= 2) {
-      tryPlay();
-    } else {
-      a.addEventListener('loadeddata', tryPlay, { once: true });
-      a.addEventListener('canplay',    tryPlay, { once: true });
-    }
-
-    // Filets de sécurité
-    [500, 1500, 3000, 6000].forEach(function (t) { setTimeout(tryPlay, t); });
-
-    // Relance si mis en pause
-    a.addEventListener('pause', function () { setTimeout(tryPlay, 500); });
-    a.addEventListener('ended', tryPlay);
-
-    // Relance au retour de visibilité
-    document.addEventListener('visibilitychange', function () {
-      if (!document.hidden) tryPlay();
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-})();
-
-// ---------------------------------------------------------------------
-// Refresh préventif toutes les 3 heures
-// Remet à zéro tous les compteurs d'inactivité (navigateur + médias)
-// ---------------------------------------------------------------------
-(function autoRefresh() {
-  var DELAI = 3 * 60 * 60 * 1000;   // 3 heures en millisecondes
-
-  setTimeout(function () {
-    console.log('[autoRefresh] rechargement de la page');
-    location.reload();
-  }, DELAI);
-})();
-
-// =====================================================================
-// KEEP-ALIVE MULTI-COUCHES
-// Toutes les techniques JS connues pour maintenir l'activité système
-// =====================================================================
-(function keepAliveMultiLayer() {
-
-  // ---------------------------------------------------------------
-  // 1) Canvas animation continue (rAF)
-  //    Garde le CPU/GPU actif → le système voit du travail en cours
-  // ---------------------------------------------------------------
-  (function canvasActivity() {
-    var c = document.createElement('canvas');
-    c.width = 1; c.height = 1;
-    c.style.cssText = 'position:fixed;bottom:0;left:0;width:1px;height:1px;opacity:0.01;pointer-events:none;z-index:-1;';
-    document.body.appendChild(c);
-    var ctx = c.getContext('2d');
-    var t = 0;
-
-    function loop() {
-      // Dessine un pixel qui change de couleur → force un repaint
-      t++;
-      ctx.fillStyle = (t % 2) ? '#000001' : '#000002';
-      ctx.fillRect(0, 0, 1, 1);
-      requestAnimationFrame(loop);
-    }
-    requestAnimationFrame(loop);
-  })();
-
-  // ---------------------------------------------------------------
-  // 2) Oscillateur WebAudio silencieux
-  //    Différent de <audio> : reste dans le contexte audio natif
-  // ---------------------------------------------------------------
-  (function webAudioOscillator() {
-    try {
-      var AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-      var ac = new AC();
-      var osc = ac.createOscillator();
-      var gain = ac.createGain();
-      gain.gain.value = 0.0001;   // quasi inaudible
-      osc.frequency.value = 20;   // 20 Hz = infrasons, inaudible
-      osc.connect(gain);
-      gain.connect(ac.destination);
-      osc.start();
-
-      // Certains navigateurs suspendent l'AudioContext après inactivité
-      document.addEventListener('visibilitychange', function () {
-        if (!document.hidden && ac.state === 'suspended') ac.resume();
-      });
-      setInterval(function () {
-        if (ac.state === 'suspended') ac.resume();
-      }, 30000);
-    } catch (e) {
-      console.warn('[webAudio] non supporté :', e);
-    }
-  })();
-
-  // ---------------------------------------------------------------
-  // 3) Événements clavier/pointeur synthétiques (toutes les 60 s)
-  //    Ne trompent PAS Android, mais peuvent tromper certains
-  //    navigateurs qui comptent l'activité DOM
-  // ---------------------------------------------------------------
-  (function syntheticEvents() {
-    function dispatch() {
-      var target = document.body;
-      try {
-        ['keydown','keypress','keyup'].forEach(function (type) {
-          target.dispatchEvent(new KeyboardEvent(type, {
-            key: 'Shift', code: 'ShiftLeft', keyCode: 16,
-            bubbles: true, cancelable: true
-          }));
-        });
-        target.dispatchEvent(new MouseEvent('mousemove', {
-          bubbles: true, cancelable: true, clientX: 1, clientY: 1
-        }));
-        target.dispatchEvent(new PointerEvent('pointermove', {
-          bubbles: true, cancelable: true, clientX: 1, clientY: 1
-        }));
-      } catch (e) { /* ignore */ }
-    }
-    dispatch();
-    setInterval(dispatch, 60000);
-  })();
-
-  // ---------------------------------------------------------------
-  // 4) Cycle de focus sur un élément invisible
-  //    Un changement de focus est parfois compté comme activité
-  // ---------------------------------------------------------------
-  (function focusCycle() {
-    var el = document.createElement('input');
-    el.type = 'text';
-    el.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;';
-    el.setAttribute('aria-hidden', 'true');
-    el.setAttribute('tabindex', '-1');
-    document.body.appendChild(el);
-
-    setInterval(function () {
-      try {
-        el.focus({ preventScroll: true });
-        setTimeout(function () { el.blur(); }, 100);
-      } catch (e) { /* ignore */ }
-    }, 120000);   // toutes les 2 min
-  })();
-
-  // ---------------------------------------------------------------
-  // 5) Requête réseau périodique vers soi-même
-  //    Maintient l'activité réseau + SSE vivant
-  // ---------------------------------------------------------------
-  (function networkPing() {
-    setInterval(function () {
-      fetch('/api/version', { cache: 'no-store' }).catch(function(){});
-    }, 60000);
-  })();
-
-  // ---------------------------------------------------------------
-  // 6) Animation CSS infinie (compositor activity)
-  // ---------------------------------------------------------------
-  (function cssAnimation() {
-    var s = document.createElement('style');
-    s.textContent = '@keyframes __ka{0%{opacity:0.99}100%{opacity:1}}' +
-                    '.__ka-el{animation:__ka 60s linear infinite;}';
-    document.head.appendChild(s);
-    var d = document.createElement('div');
-    d.className = '__ka-el';
-    d.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;';
-    document.body.appendChild(d);
-  })();
-
-  // ---------------------------------------------------------------
-  // 7) Toggle plein-écran périodique (demande d'activité utilisateur)
-  //    ⚠ À utiliser avec précaution : peut fermer le plein-écran
-  //    Désactivé par défaut. Décommente si tu veux tester.
-  // ---------------------------------------------------------------
-  /*
-  (function fullscreenPulse() {
-    setInterval(function () {
-      try {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().catch(function(){});
-        }
-      } catch (e) {}
-    }, 30 * 60 * 1000);   // toutes les 30 min
-  })();
-  */
-
-  // ---------------------------------------------------------------
-  // 8) Debug : état toutes les heures
-  // ---------------------------------------------------------------
-  setInterval(function () {
-    var a = document.getElementById('keepAliveAudio');
-    console.log('[keepAlive] alive — audio.paused=' + (a ? a.paused : 'n/a') +
-                ' visibility=' + document.visibilityState +
-                ' hidden=' + document.hidden);
-  }, 60 * 60 * 1000);
-
-})();
-
 </script>
 </body>
 </html>

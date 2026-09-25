@@ -36,17 +36,17 @@ const DEFAULT_DATA = {
   showGregorian: true,
   showHijri: true,
   showLogo: false,
-  showQR: true,
   showTahajud: false,
   prayers: {
-    sahour:  '',
-    fajr:    '',
-    sunrise: '',
-    zuhr:    '12:30',
-    asr:     '15:30',
-    maghrib: '',
-    isha:    '',
-    jumuah:  '12:20'
+    sahour:  '04:30',
+    fajr:    '05:30',
+    sunrise: '07:00',
+    zuhr:    '13:15',
+    asr:     '16:45',
+    maghrib: '19:20',
+    isha:    '20:45',
+    jumuah:  '13:30',
+    tahajud: '03:30'
   },
   footerMessage: 'MADE by HJ. QASSIM',
   showFooter: true
@@ -66,11 +66,11 @@ function loadData() {
   try {
     const raw = fs.readFileSync(DATA_FILE, 'utf8');
     const parsed = JSON.parse(raw);
-    delete parsed.showQR;
+    delete parsed.showQR;                    // jamais lu du disque
     return {
       ...DEFAULT_DATA,
       ...parsed,
-      showQR: true,
+      showQR: true,                          // toujours true au démarrage
       prayers: { ...DEFAULT_DATA.prayers, ...(parsed.prayers || {}) }
     };
   } catch (e) {
@@ -81,13 +81,13 @@ function loadData() {
 
 function saveData(data) {
   const toSave = { ...data };
-  delete toSave.showQR;
+  delete toSave.showQR;                      // jamais écrit sur le disque
   fs.writeFileSync(DATA_FILE, JSON.stringify(toSave, null, 2));
 }
 
 let state = loadData();
 
-// Diffusion en temps réel vers l'écran TV
+// ---- Diffusion en temps réel vers l'écran TV (Server-Sent Events) ------
 
 let sseClients = [];
 
@@ -152,7 +152,7 @@ function localAddresses() {
 const server = http.createServer((req, res) => {
   const url = req.url.split('?')[0];
 
-    if (url === '/api/version' && req.method === 'GET') {
+  if (url === '/api/version' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     res.end(JSON.stringify({ version: APP_VERSION }));
     return;

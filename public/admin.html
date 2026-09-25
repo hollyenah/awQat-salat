@@ -6,27 +6,23 @@
 <title>awQat-salat - Admin</title>
 <link rel="stylesheet" href="style-admin.css">
 <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-
-  <!-- iOS favicon -->
-  <link rel="apple-touch-icon" sizes="512x512" href="img/favicon.png">
-
-  <!-- Android favicon -->
-  <link rel="icon" type="image/png" sizes="512x512" href="img/favicon.png">
-
+<link rel="apple-touch-icon" sizes="512x512" href="img/favicon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="img/favicon.png">
 </head>
 <body>
-  
+
   <p style="font-size: 0.875em; margin: 0;text-align: center; color:#8FA89E;">
-      &copy;2026 awQat-salat.app - Qassim. · <span id="appVersion">v…</span>
-    </p><h1>Administration</h1>
+    &copy;2026 awQat-salat.app - Qassim. · <span id="appVersion">v…</span>
+  </p>
+  <h1>Administration</h1>
 
-
-  <p class="subtitle">Les modifications s'appliquent sur l'écran après l'enregistrement.</p>
+  <p class="subtitle">Les modifications s'appliquent sur l'écran dès l'enregistrement.</p>
 
   <section>
     <h2>Masjid</h2>
     <label for="mosqueName">Nom de la Masjid</label>
-<textarea id="mosqueName" placeholder="MASJID" rows="2"></textarea>
+    <textarea id="mosqueName" placeholder="MASJID" rows="2"></textarea>
+    <p class="hint">Appuyez sur Entrée pour ajouter un retour à la ligne (ex. nom en français / nom en arabe).</p>
 
     <label>Date affichée</label>
     <p class="hint">Calculée automatiquement. Si la date hijri ne correspond pas à la vue de la lune, ajustez ici :</p>
@@ -36,6 +32,7 @@
       <button type="button" id="hijriPlus">+</button>
     </div>
     <p class="hint" id="hijriPreview"></p>
+
     <div class="switch-row">
       <span>Afficher la date grégorienne</span>
       <label class="switch">
@@ -50,7 +47,6 @@
         <span class="slider"></span>
       </label>
     </div>
-
     <div class="switch-row">
       <span>Afficher le logo</span>
       <label class="switch">
@@ -58,7 +54,6 @@
         <span class="slider"></span>
       </label>
     </div>
-    
     <div class="switch-row">
       <span>Afficher le QR code d'administration sur l'écran</span>
       <label class="switch">
@@ -71,50 +66,52 @@
   <section>
     <h2>Horaires de prière</h2>
     <div class="prayer-grid">
-  <div class="field">
-    <label for="sahour">Sahour</label>
-    <input type="time" id="sahour">
-  </div>
-  <div class="field">
-    <label for="fajr">Fajr</label>
-    <input type="time" id="fajr">
-  </div>
-  <div class="field">
-    <label for="sunrise">Lever du soleil</label>
-    <input type="time" id="sunrise">
-  </div>
-  <div class="field">
-    <label for="zuhr">Zuhr</label>
-    <input type="time" id="zuhr">
-  </div>
-  <div class="field">
-    <label for="asr">Asr</label>
-    <input type="time" id="asr">
-  </div>
-  <div class="field">
-    <label for="maghrib">Maghrib</label>
-    <input type="time" id="maghrib">
-  </div>
-  <div class="field">
-    <label for="isha">Isha</label>
-    <input type="time" id="isha">
-  </div>
-  <div class="field">
-    <label for="jumuah">Jum'ah</label>
-    <input type="time" id="jumuah">
-  </div>
-  <div class="field">
-    <label for="tahajud">Tahajud</label>
-    <input type="time" id="tahajud">
-  </div>
-</div>
-<div class="switch-row" style="margin-top:16px;">
-  <span>Afficher Tahajud à la place de Joum'ah</span>
-  <label class="switch">
-    <input type="checkbox" id="showTahajud">
-    <span class="slider"></span>
-  </label>
-</div>
+      <div class="field">
+        <label for="sahour">Sahour</label>
+        <input type="time" id="sahour">
+      </div>
+      <div class="field">
+        <label for="fajr">Fajr</label>
+        <input type="time" id="fajr">
+      </div>
+      <div class="field">
+        <label for="sunrise">Lever du soleil</label>
+        <input type="time" id="sunrise">
+      </div>
+      <div class="field">
+        <label for="zuhr">Zuhr</label>
+        <input type="time" id="zuhr">
+      </div>
+      <div class="field">
+        <label for="asr">Asr</label>
+        <input type="time" id="asr">
+      </div>
+      <div class="field">
+        <label for="maghrib">Maghrib</label>
+        <input type="time" id="maghrib">
+      </div>
+      <div class="field">
+        <label for="isha">Isha</label>
+        <input type="time" id="isha">
+      </div>
+      <div class="field">
+        <label for="jumuah">Jum'ah</label>
+        <input type="time" id="jumuah">
+      </div>
+      <div class="field">
+        <label for="tahajud">Tahajud</label>
+        <input type="time" id="tahajud">
+      </div>
+    </div>
+
+    <div class="switch-row" style="margin-top:16px;">
+      <span>Afficher Tahajud à la place de Joum'ah</span>
+      <label class="switch">
+        <input type="checkbox" id="showTahajud">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <p class="hint">Si activé, la 8ᵉ case affiche <b>Tahajud</b> au lieu de <b>Joum'ah</b>. Aucune case supplémentaire n'est ajoutée.</p>
   </section>
 
   <section>
@@ -136,14 +133,8 @@
     <button id="saveBtn">Enregistrer</button>
     <button id="exportBtn" type="button">Capture</button>
   </div>
-  <footer>
-  </footer>
 
 <script>
-  /*
-     DONNÉES & FORMULAIRE
-     */
-
   const HIJRI_MONTHS = [
     "Mouharram", "Safar", "Rabioul-Awwal", "Rabioul-Akhir",
     "Joumadal-Oula", "Joumadal-Akhira", "Rajab", "Cha'bân",
@@ -181,38 +172,36 @@
     hijriPreviewEl.textContent = `Aujourd'hui : ${h.day} ${HIJRI_MONTHS[h.month - 1]} ${h.year}`;
   }
 
-  const hijriMinusBtn = document.getElementById('hijriMinus');
-  const hijriPlusBtn = document.getElementById('hijriPlus');
-  if (hijriMinusBtn) hijriMinusBtn.addEventListener('click', () => {
+  document.getElementById('hijriMinus').addEventListener('click', () => {
     hijriOffset = Math.max(-3, hijriOffset - 1);
     refreshHijriPreview();
   });
-  if (hijriPlusBtn) hijriPlusBtn.addEventListener('click', () => {
+  document.getElementById('hijriPlus').addEventListener('click', () => {
     hijriOffset = Math.min(3, hijriOffset + 1);
     refreshHijriPreview();
   });
 
-const els = {
-  mosqueName: document.getElementById('mosqueName'),
-  sahour:  document.getElementById('sahour'),
-  fajr:    document.getElementById('fajr'),
-  sunrise: document.getElementById('sunrise'),
-  zuhr:    document.getElementById('zuhr'),
-  asr:     document.getElementById('asr'),
-  maghrib: document.getElementById('maghrib'),
-  isha:    document.getElementById('isha'),
-  jumuah:  document.getElementById('jumuah'),
-  footerMessage: document.getElementById('footerMessage'),
-  showFooter: document.getElementById('showFooter'),
-  showGregorian: document.getElementById('showGregorian'),
-  showHijri: document.getElementById('showHijri'),
-  showLogo: document.getElementById('showLogo'),
-  showQR: document.getElementById('showQR'),
-  tahajud: document.getElementById('tahajud'),
-  showTahajud: document.getElementById('showTahajud'),
-};
+  const els = {
+    mosqueName:    document.getElementById('mosqueName'),
+    sahour:        document.getElementById('sahour'),
+    fajr:          document.getElementById('fajr'),
+    sunrise:       document.getElementById('sunrise'),
+    zuhr:          document.getElementById('zuhr'),
+    asr:           document.getElementById('asr'),
+    maghrib:       document.getElementById('maghrib'),
+    isha:          document.getElementById('isha'),
+    jumuah:        document.getElementById('jumuah'),
+    tahajud:       document.getElementById('tahajud'),
+    footerMessage: document.getElementById('footerMessage'),
+    showFooter:    document.getElementById('showFooter'),
+    showGregorian: document.getElementById('showGregorian'),
+    showHijri:     document.getElementById('showHijri'),
+    showLogo:      document.getElementById('showLogo'),
+    showQR:        document.getElementById('showQR'),
+    showTahajud:   document.getElementById('showTahajud'),
+  };
 
-  const saveBtn = document.getElementById('saveBtn');
+  const saveBtn  = document.getElementById('saveBtn');
   const statusEl = document.getElementById('status');
 
   function fill(data){
@@ -220,17 +209,18 @@ const els = {
     hijriOffset = Number.isFinite(data.hijriOffset) ? data.hijriOffset : 0;
     refreshHijriPreview();
     if (els.showGregorian) els.showGregorian.checked = data.showGregorian !== false;
-    if (els.showHijri) els.showHijri.checked = data.showHijri !== false;
-   const p = data.prayers || {};
-  ['sahour','fajr','sunrise','zuhr','asr','maghrib','isha','jumuah'].forEach((k) => {
-    if (els[k]) els[k].value = p[k] || '';
-  });
+    if (els.showHijri)     els.showHijri.checked     = data.showHijri !== false;
+    if (els.showQR)        els.showQR.checked        = data.showQR !== false;
+    if (els.showTahajud)   els.showTahajud.checked   = data.showTahajud === true;
+
+    const p = data.prayers || {};
+    ['sahour','fajr','sunrise','zuhr','asr','maghrib','isha','jumuah','tahajud'].forEach((k) => {
+      if (els[k]) els[k].value = p[k] || '';
+    });
+
     if (els.footerMessage) els.footerMessage.value = data.footerMessage || '';
-    if (els.showFooter) els.showFooter.checked = !!data.showFooter;
-    if (els.showLogo) els.showLogo.checked = !!data.showLogo;
-    if (els.showQR) els.showQR.checked = data.showQR !== false;
-    if (els.tahajud) els.tahajud.value = p.tahajud || '';
-    if (els.showTahajud) els.showTahajud.checked = data.showTahajud === true;
+    if (els.showFooter)    els.showFooter.checked  = !!data.showFooter;
+    if (els.showLogo)      els.showLogo.checked    = !!data.showLogo;
   }
 
   function setStatus(text, kind){
@@ -239,11 +229,12 @@ const els = {
     statusEl.className = kind || '';
   }
 
-  // Construit l'objet envoyé au serveur (utilisé par Enregistrer ET par Capture)
   function buildPayload(){
     return {
-      mosqueName:    els.mosqueName    ? els.mosqueName.value.trim() : '',
+      mosqueName:    els.mosqueName ? els.mosqueName.value.trim() : '',
       showLogo:      els.showLogo      ? els.showLogo.checked        : false,
+      showQR:        els.showQR        ? els.showQR.checked          : true,
+      showTahajud:   els.showTahajud   ? els.showTahajud.checked     : false,
       hijriOffset:   hijriOffset,
       showGregorian: els.showGregorian ? els.showGregorian.checked   : true,
       showHijri:     els.showHijri     ? els.showHijri.checked       : true,
@@ -256,12 +247,10 @@ const els = {
         maghrib: els.maghrib ? els.maghrib.value : '',
         isha:    els.isha    ? els.isha.value    : '',
         jumuah:  els.jumuah  ? els.jumuah.value  : '',
-        tahajud: els.tahajud ? els.tahajud.value : '',
+        tahajud: els.tahajud ? els.tahajud.value : ''
       },
       footerMessage: els.footerMessage ? els.footerMessage.value : '',
-      showFooter:    els.showFooter    ? els.showFooter.checked  : false,
-      showQR: els.showQR ? els.showQR.checked : true,
-      showTahajud: els.showTahajud ? els.showTahajud.checked : false,
+      showFooter:    els.showFooter    ? els.showFooter.checked  : false
     };
   }
 
@@ -272,18 +261,15 @@ const els = {
     .then(fill)
     .catch(() => setStatus("Impossible de charger les données. Vérifiez que le téléphone est bien sur le même Wi-Fi.", 'err'));
 
-  /* ENREGISTREMENT */
-
-  if (saveBtn) saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', () => {
     const payload = buildPayload();
-
     saveBtn.disabled = true;
     setStatus('Enregistrement…');
 
     fetch('/api/data', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     })
       .then((r) => { if (!r.ok) throw new Error('bad status'); return r.json(); })
       .then(() => {
@@ -296,8 +282,7 @@ const els = {
       });
   });
 
-  /* CAPTURE RÉELLE DE L'ÉCRAN TV */
-
+  // ---- Capture PNG ----
   const TV_W = 1920;
   const TV_H = 1080;
 
@@ -317,7 +302,6 @@ const els = {
     });
   }
 
-  // Construit les @font-face avec les fichiers en base64
   async function buildEmbeddedFontCSS(){
     const fonts = [
       { family: 'primaryFont', url: '/font/Poppins-Black.ttf',
@@ -344,7 +328,6 @@ const els = {
   }
 
   async function captureTVSnapshot(){
-    // 1. iframe caché sur /tv.html
     const iframe = document.createElement('iframe');
     iframe.setAttribute('aria-hidden', 'true');
     iframe.style.cssText =
@@ -361,7 +344,6 @@ const els = {
     const win = iframe.contentWindow;
     const doc = win.document;
 
-    // 2. On laisse passer la micro-tâche SSE initiale, puis on pousse les valeurs actuelles du formulaire admin.
     await new Promise((r) => setTimeout(r, 150));
     const payload = buildPayload();
     try {
@@ -369,34 +351,31 @@ const els = {
       if (typeof win.tickClock === 'function') win.tickClock();
     } catch (e){ /* ignore */ }
 
-    // 3. Attente du chargement des polices (importantes !)
     try { await doc.fonts.ready; } catch (e){}
     await new Promise((r) => setTimeout(r, 200));
 
-    // 4. Récupération du CSS TV + polices inlinées
     let cssText = await fetch('/style-tv.css').then((r) => r.text());
-    // Retire les @font-face d'origine (on les remplace par celles en base64)
     cssText = cssText.replace(/@font-face\s*\{[^}]*\}/g, '');
     const fontCSS = await buildEmbeddedFontCSS();
 
-    // 5. Clone de la scène (#stage)
     const stageSrc = doc.getElementById('stage');
     const stageEl  = stageSrc.cloneNode(true);
 
-    // On neutralise le scale appliqué par fitStage() (iframe déjà 1920x1080)
     stageEl.style.transform       = 'scale(1)';
     stageEl.style.transformOrigin = 'top left';
     stageEl.style.position        = 'absolute';
     stageEl.style.top             = '0';
     stageEl.style.left            = '0';
 
-    // Suppression des gestionnaires inline
     stageEl.querySelectorAll('*').forEach((el) => {
       el.removeAttribute('onerror');
       el.removeAttribute('onload');
     });
 
-    // Logo → data URI (les ressources externes ne se chargent pas dans un SVG-image)
+    // Masquer le QR pendant la capture
+    const qrControl = stageEl.querySelector('#qrControl');
+    if (qrControl) qrControl.style.display = 'none';
+
     const logoEl = stageEl.querySelector('#logo');
     if (logoEl){
       if (payload.showLogo){
@@ -411,14 +390,8 @@ const els = {
       }
     }
 
-    // Masquer le QR pendant la capture
-    var qrControl = stageEl.querySelector('#qrControl');
-    if (qrControl) qrControl.style.display = 'none';
-
-    // 6. Sérialisation XHTML
     const stageXML = new XMLSerializer().serializeToString(stageEl);
 
-    // 7. Construction du SVG <foreignObject>
     const bgStyle =
       'width:' + TV_W + 'px;height:' + TV_H + 'px;margin:0;padding:0;' +
       'overflow:hidden;position:relative;' +
@@ -440,10 +413,8 @@ const els = {
         '</foreignObject>' +
       '</svg>';
 
-    // data: URI → jamais de "taint" du canvas, même sur Android WebView
     const svgURL = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgMarkup);
 
-    // 8. SVG → Image → Canvas
     const img = new Image();
     await new Promise((resolve, reject) => {
       img.onload  = resolve;
@@ -463,13 +434,11 @@ const els = {
     ctx.drawImage(img, 0, 0, TV_W, TV_H);
 
     iframe.remove();
-
     return canvas;
   }
 
-  /* BOUTON CAPTURE */
   const exportBtn = document.getElementById('exportBtn');
-  if (exportBtn) exportBtn.addEventListener('click', async () => {
+  exportBtn.addEventListener('click', async () => {
     const prevLabel = exportBtn.textContent;
     exportBtn.disabled = true;
     exportBtn.textContent = 'Génération…';
@@ -503,7 +472,7 @@ const els = {
     }
   });
 
-  // Affichage de la version de l'application
+  // ---- Version ----
   fetch('/api/version')
     .then((r) => r.json())
     .then((d) => {
@@ -514,7 +483,6 @@ const els = {
       const el = document.getElementById('appVersion');
       if (el) el.textContent = 'v?';
     });
-    
 </script>
 </body>
 </html>
