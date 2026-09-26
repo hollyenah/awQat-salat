@@ -1,6 +1,6 @@
 {
   "name": "awQat-salat",
-  "version": "1.0.0 Release",
+  "version": "1.1.0 Release",
   "description": "Application d'affichage des horaires de prière pour Android TV, 100% hors-ligne",
   "main": "server.js",
   "scripts": {

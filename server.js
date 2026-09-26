@@ -37,6 +37,7 @@ const DEFAULT_DATA = {
   showHijri: true,
   showLogo: false,
   showTahajud: false,
+  bgColor: '#123A32',
   prayers: {
     sahour:  '04:30',
     fajr:    '05:30',

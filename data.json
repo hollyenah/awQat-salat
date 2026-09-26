@@ -5,6 +5,7 @@
   "showHijri": true,
   "showLogo": false,
   "showTahajud": false,
+  "bgColor": "#123A32",
   "prayers": {
     "sahour": "04:21",
     "fajr": "16:50",

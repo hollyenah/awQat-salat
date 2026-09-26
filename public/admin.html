@@ -61,6 +61,8 @@
         <span class="slider"></span>
       </label>
     </div>
+    <label for="bgColor">Couleur du fond</label>
+    <input type="color" id="bgColor" value="#123A32">
   </section>
 
   <section>
@@ -140,6 +142,63 @@
     "Joumadal-Oula", "Joumadal-Akhira", "Rajab", "Cha'bân",
     "Ramadan", "Chawwal", "Dhou al-Qi'da", "Dhoul-Hijja"
   ];
+  // ---- Gradient helpers ----
+  function hexToHsl(hex){
+    hex = hex.replace('#','');
+    const r = parseInt(hex.substr(0,2),16) / 255;
+    const g = parseInt(hex.substr(2,2),16) / 255;
+    const b = parseInt(hex.substr(4,2),16) / 255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    let h, s, l = (max+min)/2;
+    if (max === min) { h = s = 0; }
+    else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return { h: h*360, s: s*100, l: l*100 };
+  }
+
+  function hslToHex(h, s, l){
+    h /= 360; s /= 100; l /= 100;
+    let r, g, b;
+    if (s === 0) { r = g = b = l; }
+    else {
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      };
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+    }
+    const toHex = x => {
+      const hex = Math.round(x * 255).toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    };
+    return '#' + toHex(r) + toHex(g) + toHex(b);
+  }
+
+    if (data.bgColor) {
+      const t = buildTheme(data.bgColor);
+      document.body.style.background =
+        `radial-gradient(ellipse at 50% 30%, ${t.bg} 0%, ${t.bgDeep} 60%)`;
+      document.documentElement.style.setProperty('--bg-panel',        t.panel);
+      document.documentElement.style.setProperty('--bg-panel-active', t.panelActive);
+      document.documentElement.style.setProperty('--divider',         t.divider);
+    }
+
 
   function gregorianToHijri(gy, gm, gd, offset){
     let jd = Math.floor((1461 * (gy + 4800 + Math.floor((gm - 14) / 12))) / 4) +
@@ -199,6 +258,7 @@
     showLogo:      document.getElementById('showLogo'),
     showQR:        document.getElementById('showQR'),
     showTahajud:   document.getElementById('showTahajud'),
+    bgColor:       document.getElementById('bgColor'),    
   };
 
   const saveBtn  = document.getElementById('saveBtn');
@@ -221,6 +281,7 @@
     if (els.footerMessage) els.footerMessage.value = data.footerMessage || '';
     if (els.showFooter)    els.showFooter.checked  = !!data.showFooter;
     if (els.showLogo)      els.showLogo.checked    = !!data.showLogo;
+    if (els.bgColor) els.bgColor.value = data.bgColor || '#123A32';
   }
 
   function setStatus(text, kind){
@@ -232,6 +293,7 @@
   function buildPayload(){
     return {
       mosqueName:    els.mosqueName ? els.mosqueName.value.trim() : '',
+      bgColor:       els.bgColor ? els.bgColor.value : '#123A32',
       showLogo:      els.showLogo      ? els.showLogo.checked        : false,
       showQR:        els.showQR        ? els.showQR.checked          : true,
       showTahajud:   els.showTahajud   ? els.showTahajud.checked     : false,
@@ -366,6 +428,9 @@
     stageEl.style.position        = 'absolute';
     stageEl.style.top             = '0';
     stageEl.style.left            = '0';
+    stageEl.style.setProperty('--bg-panel',        theme.panel);
+    stageEl.style.setProperty('--bg-panel-active', theme.panelActive);
+    stageEl.style.setProperty('--divider',         theme.divider);
 
     stageEl.querySelectorAll('*').forEach((el) => {
       el.removeAttribute('onerror');
@@ -392,10 +457,11 @@
 
     const stageXML = new XMLSerializer().serializeToString(stageEl);
 
+    const theme = buildTheme(payload.bgColor || '#123A32');
     const bgStyle =
       'width:' + TV_W + 'px;height:' + TV_H + 'px;margin:0;padding:0;' +
       'overflow:hidden;position:relative;' +
-      'background:radial-gradient(ellipse at 50% 30%, #123A32 0%, #0A1F1C 60%);' +
+      `background:radial-gradient(ellipse at 50% 30%, ${theme.bg} 0%, ${theme.bgDeep} 60%);` +
       "color:#F5F1E6;font-family:'primaryFont','Roboto','Noto Sans',sans-serif;";
 
     const svgMarkup =
@@ -429,7 +495,7 @@
     canvas.width  = TV_W;
     canvas.height = TV_H;
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#0A1F1C';
+    ctx.fillStyle = theme.bgDeep;
     ctx.fillRect(0, 0, TV_W, TV_H);
     ctx.drawImage(img, 0, 0, TV_W, TV_H);
 
