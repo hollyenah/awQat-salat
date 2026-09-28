@@ -63,47 +63,21 @@
     </div>
     <label for="bgColor">Couleur du fond</label>
     <input type="color" id="bgColor" value="#123A32">
+    <p class="hint">La couleur dominante du dégradé. Le fond, les cartes, le QR et le copyright s'adaptent automatiquement.</p>
   </section>
 
   <section>
     <h2>Horaires de prière</h2>
     <div class="prayer-grid">
-      <div class="field">
-        <label for="sahour">Sahour</label>
-        <input type="time" id="sahour">
-      </div>
-      <div class="field">
-        <label for="fajr">Fajr</label>
-        <input type="time" id="fajr">
-      </div>
-      <div class="field">
-        <label for="sunrise">Lever du soleil</label>
-        <input type="time" id="sunrise">
-      </div>
-      <div class="field">
-        <label for="zuhr">Zuhr</label>
-        <input type="time" id="zuhr">
-      </div>
-      <div class="field">
-        <label for="asr">Asr</label>
-        <input type="time" id="asr">
-      </div>
-      <div class="field">
-        <label for="maghrib">Maghrib</label>
-        <input type="time" id="maghrib">
-      </div>
-      <div class="field">
-        <label for="isha">Isha</label>
-        <input type="time" id="isha">
-      </div>
-      <div class="field">
-        <label for="jumuah">Jum'ah</label>
-        <input type="time" id="jumuah">
-      </div>
-      <div class="field">
-        <label for="tahajud">Tahajud</label>
-        <input type="time" id="tahajud">
-      </div>
+      <div class="field"><label for="sahour">Sahour</label><input type="time" id="sahour"></div>
+      <div class="field"><label for="fajr">Fajr</label><input type="time" id="fajr"></div>
+      <div class="field"><label for="sunrise">Lever du soleil</label><input type="time" id="sunrise"></div>
+      <div class="field"><label for="zuhr">Zuhr</label><input type="time" id="zuhr"></div>
+      <div class="field"><label for="asr">Asr</label><input type="time" id="asr"></div>
+      <div class="field"><label for="maghrib">Maghrib</label><input type="time" id="maghrib"></div>
+      <div class="field"><label for="isha">Isha</label><input type="time" id="isha"></div>
+      <div class="field"><label for="jumuah">Jum'ah</label><input type="time" id="jumuah"></div>
+      <div class="field"><label for="tahajud">Tahajud</label><input type="time" id="tahajud"></div>
     </div>
 
     <div class="switch-row" style="margin-top:16px;">
@@ -142,7 +116,8 @@
     "Joumadal-Oula", "Joumadal-Akhira", "Rajab", "Cha'bân",
     "Ramadan", "Chawwal", "Dhou al-Qi'da", "Dhoul-Hijja"
   ];
-  // ---- Gradient helpers ----
+
+  // Helpers couleur
   function hexToHsl(hex){
     hex = hex.replace('#','');
     const r = parseInt(hex.substr(0,2),16) / 255;
@@ -190,16 +165,22 @@
     return '#' + toHex(r) + toHex(g) + toHex(b);
   }
 
-    if (data.bgColor) {
-      const t = buildTheme(data.bgColor);
-      document.body.style.background =
-        `radial-gradient(ellipse at 50% 30%, ${t.bg} 0%, ${t.bgDeep} 60%)`;
-      document.documentElement.style.setProperty('--bg-panel',        t.panel);
-      document.documentElement.style.setProperty('--bg-panel-active', t.panelActive);
-      document.documentElement.style.setProperty('--divider',         t.divider);
-    }
+  function buildTheme(hex){
+    const h = hexToHsl(hex);
+    const clampL = v => Math.max(0, Math.min(100, v));
+    const clampS = v => Math.max(0, Math.min(100, v));
+    return {
+      bg:          hex,
+      bgDeep:      hslToHex(h.h, h.s,             clampL(h.l - 7)),
+      panel:       hslToHex(h.h, clampS(h.s - 7),  clampL(h.l - 2)),
+      panelActive: hslToHex(h.h, clampS(h.s - 13), clampL(h.l + 3)),
+      divider:     hslToHex(h.h, clampS(h.s - 22), clampL(h.l + 5)),
+      qr:          hslToHex(h.h, clampS(h.s - 3),  clampL(h.l + 20)),
+      watermark:   hslToHex(h.h, clampS(h.s - 8),  clampL(h.l + 5))
+    };
+  }
 
-
+  // Hijri
   function gregorianToHijri(gy, gm, gd, offset){
     let jd = Math.floor((1461 * (gy + 4800 + Math.floor((gm - 14) / 12))) / 4) +
              Math.floor((367 * (gm - 2 - 12 * Math.floor((gm - 14) / 12))) / 12) -
@@ -220,7 +201,7 @@
   }
 
   let hijriOffset = 0;
-  const hijriValueEl = document.getElementById('hijriValue');
+  const hijriValueEl   = document.getElementById('hijriValue');
   const hijriPreviewEl = document.getElementById('hijriPreview');
 
   function refreshHijriPreview(){
@@ -240,6 +221,7 @@
     refreshHijriPreview();
   });
 
+  // Formulaire
   const els = {
     mosqueName:    document.getElementById('mosqueName'),
     sahour:        document.getElementById('sahour'),
@@ -258,7 +240,7 @@
     showLogo:      document.getElementById('showLogo'),
     showQR:        document.getElementById('showQR'),
     showTahajud:   document.getElementById('showTahajud'),
-    bgColor:       document.getElementById('bgColor'),    
+    bgColor:       document.getElementById('bgColor')
   };
 
   const saveBtn  = document.getElementById('saveBtn');
@@ -281,7 +263,7 @@
     if (els.footerMessage) els.footerMessage.value = data.footerMessage || '';
     if (els.showFooter)    els.showFooter.checked  = !!data.showFooter;
     if (els.showLogo)      els.showLogo.checked    = !!data.showLogo;
-    if (els.bgColor) els.bgColor.value = data.bgColor || '#123A32';
+    if (els.bgColor)       els.bgColor.value       = data.bgColor || '#123A32';
   }
 
   function setStatus(text, kind){
@@ -344,7 +326,7 @@
       });
   });
 
-  // ---- Capture PNG ----
+  // Capture PNG
   const TV_W = 1920;
   const TV_H = 1080;
 
@@ -366,10 +348,8 @@
 
   async function buildEmbeddedFontCSS(){
     const fonts = [
-      { family: 'primaryFont', url: '/font/Poppins-Black.ttf',
-        format: 'truetype', weight: 900 },
-      { family: 'arialBlack',  url: '/font/arial_black.ttf',
-        format: 'truetype', weight: 900 },
+      { family: 'primaryFont', url: '/font/Poppins-Black.ttf', format: 'truetype', weight: 900 },
+      { family: 'arialBlack',  url: '/font/arial_black.ttf',   format: 'truetype', weight: 900 },
       { family: 'arabicFont',  url: '/font/AligarhArabicFREEPERSONALUSE-Bold.otf',
         format: 'opentype', weight: 400 }
     ];
@@ -408,6 +388,10 @@
 
     await new Promise((r) => setTimeout(r, 150));
     const payload = buildPayload();
+
+    // Theme AVANT de l'utiliser
+    const theme = buildTheme(payload.bgColor || '#123A32');
+
     try {
       if (typeof win.render === 'function')    win.render(payload);
       if (typeof win.tickClock === 'function') win.tickClock();
@@ -428,16 +412,17 @@
     stageEl.style.position        = 'absolute';
     stageEl.style.top             = '0';
     stageEl.style.left            = '0';
+
     stageEl.style.setProperty('--bg-panel',        theme.panel);
     stageEl.style.setProperty('--bg-panel-active', theme.panelActive);
     stageEl.style.setProperty('--divider',         theme.divider);
+    stageEl.style.setProperty('--watermark',       theme.watermark);
 
     stageEl.querySelectorAll('*').forEach((el) => {
       el.removeAttribute('onerror');
       el.removeAttribute('onload');
     });
 
-    // Masquer le QR pendant la capture
     const qrControl = stageEl.querySelector('#qrControl');
     if (qrControl) qrControl.style.display = 'none';
 
@@ -457,7 +442,6 @@
 
     const stageXML = new XMLSerializer().serializeToString(stageEl);
 
-    const theme = buildTheme(payload.bgColor || '#123A32');
     const bgStyle =
       'width:' + TV_W + 'px;height:' + TV_H + 'px;margin:0;padding:0;' +
       'overflow:hidden;position:relative;' +
@@ -538,7 +522,7 @@
     }
   });
 
-  // ---- Version ----
+  // Version
   fetch('/api/version')
     .then((r) => r.json())
     .then((d) => {

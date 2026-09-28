@@ -133,10 +133,12 @@
     const clampS = v => Math.max(0, Math.min(100, v));
     return {
       bg:           hex,
-      bgDeep:       hslToHex(h.h, h.s,            clampL(h.l - 7)),
+      bgDeep:       hslToHex(h.h, h.s,             clampL(h.l - 7)),
       panel:        hslToHex(h.h, clampS(h.s - 7),  clampL(h.l - 2)),
       panelActive:  hslToHex(h.h, clampS(h.s - 13), clampL(h.l + 3)),
-      divider:      hslToHex(h.h, clampS(h.s - 22), clampL(h.l + 5))
+      divider:      hslToHex(h.h, clampS(h.s - 22), clampL(h.l + 5)),
+      qr:           hslToHex(h.h, clampS(h.s - 3),  clampL(h.l + 20)),
+      watermark:    hslToHex(h.h, clampS(h.s - 8),  clampL(h.l + 5))
     };
   }
 
@@ -210,20 +212,22 @@
     });
   }
 
-  // QR code
+    // QR CODE
   var qrInitialized = false;
   var qrVisible = false;
+  var lastQRColor = null;
 
-  function renderQR(ip, port) {
-    if (qrInitialized) return;
+  function renderQR(ip, port, color) {
+    if (qrInitialized && lastQRColor === color) return;
     try {
       var host = (ip && port) ? (ip + ':' + port) : window.location.host;
       var url = 'http://' + host + '/admin.html';
       document.getElementById('qrSvg').innerHTML = QR.toSVG(url, 4, {
-        dark:  '#2a8a77',
+        dark:  color || '#2a8a77',
         light: 'transparent'
       });
       qrInitialized = true;
+      lastQRColor = color;
     } catch (e) {
       console.warn('QR generation failed', e);
       document.getElementById('qrControl').style.display = 'none';
@@ -261,6 +265,12 @@
       document.documentElement.style.setProperty('--bg-panel',        t.panel);
       document.documentElement.style.setProperty('--bg-panel-active', t.panelActive);
       document.documentElement.style.setProperty('--divider',         t.divider);
+      document.documentElement.style.setProperty('--watermark',       t.watermark);
+
+      // QR : regénéré seulement si la couleur a changé
+      renderQR(data._localIP, data._port, t.qr);
+    } else {
+      renderQR(data._localIP, data._port, '#2a8a77');
     }
 
     document.getElementById('logo').style.display = data.showLogo ? '' : 'none';
@@ -288,7 +298,6 @@
     footerWrap.hidden = !data.showFooter;
 
     updateHighlight();
-    renderQR(data._localIP, data._port);
     setQRVisible(data.showQR !== false);
     fitStage();
   }

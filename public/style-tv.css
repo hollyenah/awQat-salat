@@ -24,6 +24,7 @@
   --fs-primary-font: 'arialBlack', 'Roboto', 'Noto Sans', sans-serif;
   --fs-arabic-font:  'arabicFont',  'primaryFont', 'Roboto', sans-serif;
   --fs-arial-black: 'arialBlack', sans-serif;
+  --watermark: #1d4b43;
 }
 
 *{ box-sizing: border-box; }
@@ -293,4 +294,5 @@ h1{
   color: #1d4b43;
   font-family: 'Arial Narrow', Arial, sans-serif;
   white-space: nowrap;
+  color: var(--watermark);
 }
