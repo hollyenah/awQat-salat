@@ -12,7 +12,7 @@
 <body>
 
   <p style="font-size: 0.875em; margin: 0;text-align: center; color:#8FA89E;">
-    &copy;2026 awQat-salat-Hollyenah · <span id="appVersion">v…</span>
+    &copy;2026 github.com/hollyenah/awqat-salat · <span id="appVersion">v…?</span>
   </p>
   <h1>Administration</h1>
 
@@ -22,7 +22,6 @@
     <h2>Masjid</h2>
     <label for="mosqueName">Nom de la Masjid</label>
     <textarea id="mosqueName" placeholder="MASJID" rows="2"></textarea>
-    <p class="hint">Appuyez sur Entrée pour ajouter un retour à la ligne (ex. nom en français / nom en arabe).</p>
 
     <label>Date affichée</label>
     <p class="hint">Calculée automatiquement. Si la date hijri ne correspond pas à la vue de la lune, ajustez ici :</p>
@@ -63,7 +62,6 @@
     </div>
     <label for="bgColor">Couleur du fond</label>
     <input type="color" id="bgColor" value="#123A32">
-    <p class="hint">La couleur dominante du dégradé. Le fond, les cartes, le QR et le copyright s'adaptent automatiquement.</p>
   </section>
 
   <section>
@@ -72,11 +70,11 @@
       <div class="field"><label for="sahour">Sahour</label><input type="time" id="sahour"></div>
       <div class="field"><label for="fajr">Fajr</label><input type="time" id="fajr"></div>
       <div class="field"><label for="sunrise">Lever du soleil</label><input type="time" id="sunrise"></div>
-      <div class="field"><label for="zuhr">Zuhr</label><input type="time" id="zuhr"></div>
+      <div class="field"><label for="zuhr">Zouhr</label><input type="time" id="zuhr"></div>
       <div class="field"><label for="asr">Asr</label><input type="time" id="asr"></div>
       <div class="field"><label for="maghrib">Maghrib</label><input type="time" id="maghrib"></div>
       <div class="field"><label for="isha">Isha</label><input type="time" id="isha"></div>
-      <div class="field"><label for="jumuah">Jum'ah</label><input type="time" id="jumuah"></div>
+      <div class="field"><label for="jumuah">Jumah</label><input type="time" id="jumuah"></div>
       <div class="field"><label for="tahajud">Tahajud</label><input type="time" id="tahajud"></div>
     </div>
 
@@ -87,7 +85,6 @@
         <span class="slider"></span>
       </label>
     </div>
-    <p class="hint">Si activé, la 8ᵉ case affiche <b>Tahajud</b> au lieu de <b>Joum'ah</b>. Aucune case supplémentaire n'est ajoutée.</p>
   </section>
 
   <section>
@@ -106,7 +103,7 @@
 
   <div class="savebar">
     <div id="status"></div>
-    <button id="saveBtn">Enregistrer</button>
+    <button id="saveBtn">Appliquer</button>
     <button id="exportBtn" type="button">Capture</button>
   </div>
 
@@ -425,6 +422,15 @@
 
     const qrControl = stageEl.querySelector('#qrControl');
     if (qrControl) qrControl.style.display = 'none';
+
+    // Masquer l'horloge dans la capture (sans laisser de vide)
+    const clockEl = stageEl.querySelector('#clock');
+    if (clockEl) clockEl.style.display = 'none';
+
+    // Réduire le gap du bloc .meta
+    const metaEl = stageEl.querySelector('.meta');
+    if (metaEl) metaEl.style.gap = '0';
+
 
     const logoEl = stageEl.querySelector('#logo');
     if (logoEl){
