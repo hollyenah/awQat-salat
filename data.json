@@ -5,14 +5,14 @@
   "showHijri": true,
   "showLogo": false,
   "showTahajud": false,
-  "bgColor": "#123A32",
+  "bgColor": "#00313b",
   "prayers": {
-    "sahour": "04:14",
+    "sahour": "04:08",
     "fajr": "04:45",
-    "sunrise": "05:30",
+    "sunrise": "05:25",
     "zuhr": "12:30",
     "asr": "15:45",
-    "maghrib": "17:53",
+    "maghrib": "17:55",
     "isha": "19:15",
     "jumuah": "12:20",
     "tahajud": "02:00"
