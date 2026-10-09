@@ -248,15 +248,19 @@ h1{
   background: var(--bg-panel-active);
   border-color: var(--gold);
   box-shadow: 0 0 0 1px var(--gold), 0 0 30px -6px var(--gold-bright);
-  animation: pulseGlow 2.6s ease-in-out infinite;
+  animation: pulseGlow 1.5s ease-in-out infinite;
 }
+
 .card.next .label{ color: var(--gold-bright); }
 .card.next .time{ color: var(--gold-bright); }
+
+
 
 @keyframes pulseGlow{
   0%, 100% { box-shadow: 0 0 0 1px var(--gold), 0 0 24px -8px var(--gold-bright); }
   50%      { box-shadow: 0 0 0 1px var(--gold), 0 0 40px -6px var(--gold-bright); }
 }
+
 @media (prefers-reduced-motion: reduce){
   .card.next{ animation:none; }
 }
