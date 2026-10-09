@@ -204,8 +204,6 @@
 
     // Vendredi : Joum'ah prioritaire
     const jumuahMin = parseHM(currentPrayers.jumuah);
-    const jumuahVisible = !document.getElementById('jumuah')?.classList.contains('hidden');
-    // (on vérifie juste que la carte est bien Joum'ah et pas Tahajud)
 
     if (isFriday && jumuahMin !== null && currentEighthIsJumuah) {
       const age = nowMin - jumuahMin;
