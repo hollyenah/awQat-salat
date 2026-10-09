@@ -72,6 +72,7 @@
   let hijriOffset   = 0;
   let showGregorian = true;
   let showHijri     = true;
+  let currentEighthIsJumuah = true;
 
   const HIJRI_MONTHS = [
     "Mouharram", "Safar", "Rabioul-Awwal", "Rabioul-Akhir",
@@ -79,7 +80,7 @@
     "Ramadan", "Chawwal", "Zou al-Qi'da", "Zoul-Hijja"
   ];
 
-  // ---- Gradient helpers ----
+  // Gradient helpers
   function hexToHsl(hex){
     hex = hex.replace('#','');
     const r = parseInt(hex.substr(0,2),16) / 255;
@@ -191,13 +192,33 @@
     return h * 60 + min;
   }
 
+  // HIGHLIGHT de la priere en cours
   function updateHighlight(){
     const now = new Date();
     const nowMin = now.getHours() * 60 + now.getMinutes();
 
-    const STAY_MIN = 10;   // durée de maintien après l'heure de la prière (minutes)
+    const STAY_MIN = 10;
+    const isFriday = now.getDay() === 5;
 
-    // 1. Une prière vient-elle de passer (il y a moins de STAY_MIN) ?
+    let activeKey;
+
+    // Vendredi : Joum'ah prioritaire
+    const jumuahMin = parseHM(currentPrayers.jumuah);
+    const jumuahVisible = !document.getElementById('jumuah')?.classList.contains('hidden');
+    // (on vérifie juste que la carte est bien Joum'ah et pas Tahajud)
+
+    if (isFriday && jumuahMin !== null && currentEighthIsJumuah) {
+      const age = nowMin - jumuahMin;
+      if (age < STAY_MIN) {
+        // Avant Joum'ah OU dans les 10 min après → on highlight
+        activeKey = 'jumuah';
+        DAILY_ORDER.forEach((key) => cardEls[key].classList.remove('next'));
+        cardEls.jumuah.classList.add('next');
+        return;
+      }
+    }
+
+    // Cas normal : prière récente puis prochaine
     let recentKey = null;
     let recentAge = Infinity;
     DAILY_ORDER.forEach((key) => {
@@ -210,13 +231,9 @@
       }
     });
 
-    let activeKey;
-
     if (recentKey) {
-      // On garde le highlight sur la prière qui vient de passer
       activeKey = recentKey;
     } else {
-      // Sinon : prochaine prière
       let nextKey = null;
       let best = Infinity;
       DAILY_ORDER.forEach((key) => {
@@ -225,20 +242,17 @@
         const diff = mins - nowMin;
         if (diff >= 0 && diff < best) { best = diff; nextKey = key; }
       });
-      if (nextKey === null) nextKey = 'fajr';   // après Isha → retour à Fajr
+      if (nextKey === null) nextKey = 'fajr';
       activeKey = nextKey;
     }
+
+    // Retirer le highlight de jumuah si on est en mode normal
+    cardEls.jumuah.classList.remove('next');
 
     DAILY_ORDER.forEach((key) => {
       cardEls[key].classList.toggle('next', key === activeKey);
     });
   }
-
-    if (nextKey === null) nextKey = 'fajr';
-
-    DAILY_ORDER.forEach((key) => {
-      cardEls[key].classList.toggle('next', key === nextKey);
-    });
 
 
     // QR CODE
@@ -322,7 +336,7 @@
       cardEls.jumuah.querySelector('.label').textContent = eighthLabel;
       cardEls.jumuah.querySelector('.time').textContent  = currentPrayers[eighthKey] || '--:--';
     }
-
+    currentEighthIsJumuah = !useTahajud;
     footerMessageEl.textContent = data.footerMessage || '';
     footerWrap.hidden = !data.showFooter;
 
