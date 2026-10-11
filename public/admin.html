@@ -179,11 +179,12 @@
 
   // Hijri
   function gregorianToHijri(gy, gm, gd, offset){
+    // 1) Conversion standard, SANS offset
     let jd = Math.floor((1461 * (gy + 4800 + Math.floor((gm - 14) / 12))) / 4) +
              Math.floor((367 * (gm - 2 - 12 * Math.floor((gm - 14) / 12))) / 12) -
              Math.floor((3 * Math.floor((gy + 4900 + Math.floor((gm - 14) / 12)) / 100)) / 4) +
              gd - 32075;
-    jd += (offset || 0);
+
     let l = jd - 1948440 + 10632;
     const n = Math.floor((l - 1) / 10631);
     l = l - 10631 * n + 354;
@@ -194,8 +195,26 @@
     const hm = Math.floor((24 * l) / 709);
     const hd = l - Math.floor((709 * hm) / 24);
     const hy = 30 * n + j - 30;
-    return { year: hy, month: hm, day: hd };
+
+    if (!offset) return { year: hy, month: hm, day: hd };
+
+    // 2) Offset appliqué AU JOUR HIJRI (règle 30 jours par mois)
+    let year = hy, month = hm, day = hd + offset;
+
+    while (day < 1) {
+      month -= 1;
+      if (month < 1) { month = 12; year -= 1; }
+      day += 30;
+    }
+    while (day > 30) {
+      day -= 30;
+      month += 1;
+      if (month > 12) { month = 1; year += 1; }
+    }
+
+    return { year: year, month: month, day: day };
   }
+
 
   let hijriOffset = 0;
   const hijriValueEl   = document.getElementById('hijriValue');
